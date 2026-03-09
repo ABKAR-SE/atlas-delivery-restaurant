@@ -174,7 +174,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);-webkit-font-s
       <div class="afield"><label>Lösenord</label><input class="ainput" id="aPwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
       <button class="aprimary" id="loginBtn" onclick="doLogin()">LOGGA IN</button>
     </div>
-    <div class="auth-skip" onclick="skipAuth()">Fortsätt utan konto (demoläge) →</div>
   </div>
 </div>
 
@@ -271,10 +270,6 @@ async function doLogin(){
   await loadAll();
 }
 
-async function skipAuth(){
-  document.getElementById('authWall').style.display='none';
-  await loadAll();
-}
 
 // ── LOAD ──────────────────────────────────────────────────────
 async function loadAll(){
