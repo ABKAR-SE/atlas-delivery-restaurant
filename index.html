@@ -3,307 +3,208 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Atlas Delivery — Restaurant Panel</title>
+<title>Atlas Delivery — Restaurant</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#07070E;--surface:#0F0F1A;--surface2:#161625;--surface3:#1C1C2E;
-  --border:rgba(0,212,255,0.10);--border2:rgba(255,255,255,0.06);
-  --cyan:#00D4FF;--violet:#7B2FFF;--orange:#FF6B35;--green:#00FF88;
-  --red:#FF3B3B;--yellow:#FFB800;
-  --text:#E8E8F0;--muted:#5A5A78;
-  --font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;--font-m:'JetBrains Mono',monospace
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:var(--font-b);display:flex;min-height:100vh;overflow-x:hidden}
+:root{--bg:#07070E;--s1:#0F0F1A;--s2:#161625;--s3:#1C1C2E;--border:rgba(0,212,255,.10);--cyan:#00D4FF;--violet:#7B2FFF;--orange:#FF6B35;--green:#00FF88;--red:#FF3B3B;--yellow:#FFB800;--text:#E8E8F0;--muted:#5A5A78;--fd:'Syne',sans-serif;--fb:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace;--grad:linear-gradient(135deg,#00D4FF,#7B2FFF);--tr:200ms cubic-bezier(.4,0,.2,1)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,212,255,.18);border-radius:4px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slidein{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(-12deg)}30%{transform:rotate(12deg)}45%{transform:rotate(-8deg)}60%{transform:rotate(8deg)}}
 
 /* ── SIDEBAR ── */
-.sidebar{
-  width:220px;flex-shrink:0;
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  position:fixed;top:0;bottom:0;left:0;z-index:50
-}
-.sidebar-logo{
-  padding:24px 20px 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;flex-direction:column;gap:4px
-}
-.sidebar-logo-top{
-  font-family:var(--font-m);font-size:10px;
-  color:var(--muted);letter-spacing:0.12em;text-transform:uppercase
-}
-.sidebar-logo-main{
-  font-family:var(--font-d);font-size:15px;font-weight:700;color:var(--cyan)
-}
-.sidebar-rest{
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-}
-.rest-indicator{
-  display:flex;align-items:center;gap:10px
-}
-.rest-dot{
-  width:10px;height:10px;border-radius:50%;
-  background:var(--green);box-shadow:0 0 8px var(--green);
-  flex-shrink:0
-}
-.rest-name{font-size:13px;font-weight:600}
-.rest-status{font-family:var(--font-m);font-size:10px;color:var(--green);letter-spacing:0.08em}
-.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 20px;cursor:pointer;
-  font-size:13px;color:var(--muted);
-  transition:all 0.15s;border:none;background:none;width:100%;text-align:left
-}
-.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
-.nav-item.active{color:var(--cyan);background:rgba(0,212,255,0.06)}
-.nav-item.active::before{
-  content:'';position:absolute;left:0;
-  width:3px;height:36px;background:var(--cyan);border-radius:0 3px 3px 0
-}
-.nav-item{position:relative}
-.nav-icon{font-size:16px;width:20px;text-align:center}
-.nav-badge{
-  margin-left:auto;
-  background:var(--orange);color:#07070E;
-  font-family:var(--font-m);font-size:10px;font-weight:700;
-  padding:2px 7px;border-radius:100px;min-width:20px;text-align:center
-}
-.sidebar-bottom{
-  padding:16px 20px;border-top:1px solid var(--border)
-}
-.toggle-row{
-  display:flex;align-items:center;justify-content:space-between;
-  font-size:12px;color:var(--muted)
-}
-.toggle{
-  width:40px;height:22px;background:var(--green);
-  border-radius:100px;position:relative;cursor:pointer;
-  transition:background 0.2s;flex-shrink:0
-}
-.toggle.off{background:var(--surface3)}
-.toggle::after{
-  content:'';position:absolute;
-  top:3px;left:3px;width:16px;height:16px;
-  background:white;border-radius:50%;
-  transition:transform 0.2s
-}
-.toggle.off::after{transform:none}
-.toggle:not(.off)::after{transform:translateX(18px)}
+.sidebar{width:230px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);position:fixed;top:0;bottom:0;left:0;z-index:50;display:flex;flex-direction:column}
+.sb-logo{padding:22px 18px 16px;border-bottom:1px solid var(--border)}
+.sb-logo-tag{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px}
+.sb-logo-main{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--cyan)}
+.sb-rest{padding:14px 18px;border-bottom:1px solid var(--border)}
+.sb-rest-row{display:flex;align-items:center;gap:8px}
+.sb-rest-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-rest-status{font-family:var(--fm);font-size:9px;letter-spacing:.06em;margin-top:2px}
+.od{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.od.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.od.off{background:var(--muted)}
+.sb-sel{margin-top:10px}
+.sb-sel select{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-family:var(--fm);font-size:11px;outline:none;cursor:pointer}
+.sb-nav{flex:1;padding:8px 0;overflow-y:auto}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 18px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;border:none;background:none;width:100%;text-align:left;position:relative}
+.sb-item:hover{color:var(--text);background:rgba(255,255,255,.025)}
+.sb-item.active{color:var(--cyan);background:rgba(0,212,255,.05)}
+.sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:2px;background:var(--cyan);border-radius:0 2px 2px 0}
+.sb-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--orange);color:var(--bg);font-family:var(--fm);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;min-width:18px;text-align:center}
+.sb-bottom{padding:14px 18px;border-top:1px solid var(--border)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+.pill{width:44px;height:24px;border-radius:100px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.pill.on{background:var(--green)}.pill.off{background:var(--s3)}
+.pill::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.pill.on::after{transform:translateX(20px)}
 
 /* ── MAIN ── */
-.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
-.topbar{
-  padding:0 28px;height:60px;
-  background:rgba(7,7,14,0.9);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:40
-}
-.topbar-title{font-family:var(--font-d);font-size:18px;font-weight:700}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.topbar-time{font-family:var(--font-m);font-size:12px;color:var(--muted)}
-.alarm-btn{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.3);
-  color:var(--orange);font-family:var(--font-m);font-size:11px;
-  padding:6px 14px;border-radius:8px;cursor:pointer;border-style:solid;
-  letter-spacing:0.06em;transition:all 0.2s
-}
-.alarm-btn:hover{background:rgba(255,107,53,0.2)}
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:56px;padding:0 24px;background:rgba(5,5,12,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.tb-title{font-family:var(--fd);font-size:16px;font-weight:700}
+.tb-right{display:flex;align-items:center;gap:12px}
+.clock{font-family:var(--fm);font-size:12px;color:var(--muted)}
+.sync-chip{display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:.06em}
+.sim-btn{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);color:var(--orange);font-family:var(--fm);font-size:11px;padding:6px 14px;border-radius:8px;cursor:pointer;letter-spacing:.04em;transition:all .2s}
+.sim-btn:hover{background:rgba(255,107,53,.2)}
+.content{padding:22px;flex:1}
 
-/* ── CONTENT ── */
-.content{padding:28px;flex:1}
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:15px;position:relative;overflow:hidden;transition:border-color .2s}
+.sc:hover{border-color:rgba(0,212,255,.2)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:.7}
+.sc-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+.sc-val{font-family:var(--fd);font-size:26px;font-weight:800;line-height:1}
+.sc-sub{font-family:var(--fm);font-size:10px;margin-top:5px}
 
-/* ── STATS ROW ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.stat-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:12px;padding:20px;position:relative;overflow:hidden
-}
-.stat-card::before{
-  content:'';position:absolute;
-  top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--c1,#00D4FF),var(--c2,#7B2FFF))
-}
-.stat-label{font-family:var(--font-m);font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px}
-.stat-val{font-family:var(--font-d);font-size:28px;font-weight:800}
-.stat-change{
-  display:flex;align-items:center;gap:4px;
-  font-family:var(--font-m);font-size:11px;margin-top:6px
-}
-.up{color:var(--green)}
-.down{color:var(--red)}
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 300px;gap:16px}
+.panel{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.ph{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ph-title{font-family:var(--fd);font-size:14px;font-weight:700}
+.ph-btn{font-family:var(--fm);font-size:11px;color:var(--cyan);border:none;background:none;cursor:pointer;padding:0}
 
-/* ── ORDERS SECTION ── */
-.section-row{display:grid;grid-template-columns:1fr 320px;gap:20px}
-.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
-.panel-header{
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between
-}
-.panel-title{font-family:var(--font-d);font-size:15px;font-weight:700}
-.panel-action{
-  font-family:var(--font-m);font-size:11px;color:var(--cyan);
-  cursor:pointer;letter-spacing:0.06em;border:none;background:none
-}
+/* ── ORDER ROWS ── */
+.orow{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s;position:relative}
+.orow:hover{background:rgba(255,255,255,.02)}
+.orow.selected{background:rgba(0,212,255,.04);border-left:2px solid var(--cyan)}
+.orow.new-flash{animation:newflash .6s ease}
+@keyframes newflash{0%{background:rgba(0,212,255,.15)}100%{background:transparent}}
+.orow-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.oid{font-family:var(--fm);font-size:11px;color:var(--cyan);letter-spacing:.06em}
+.ocust{font-size:13px;font-weight:500}
+.oprev{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.orow-bot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.otime{font-family:var(--fm);font-size:10px;color:var(--muted)}
+.ototal{font-family:var(--fm);font-size:12px}
+.oacts{display:flex;gap:6px;margin-top:8px}
+.abtn{font-family:var(--fm);font-size:10px;letter-spacing:.04em;padding:5px 12px;border-radius:7px;cursor:pointer;border:none;transition:all .15s}
+.accept{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}.accept:hover{background:rgba(0,255,136,.2)}
+.reject{background:rgba(255,59,59,.1);color:var(--red);border:1px solid rgba(255,59,59,.2)}.reject:hover{background:rgba(255,59,59,.2)}
+.readybtn{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}.readybtn:hover{background:rgba(0,212,255,.2)}
+.no-orders{padding:48px;text-align:center;color:var(--muted);font-family:var(--fm);font-size:12px;letter-spacing:.06em}
 
-/* ── ORDER LIST ── */
-.order-item{
-  padding:16px 20px;border-bottom:1px solid var(--border2);
-  cursor:pointer;transition:background 0.15s
-}
-.order-item:hover{background:rgba(255,255,255,0.02)}
-.order-item.selected{background:rgba(0,212,255,0.04);border-left:2px solid var(--cyan)}
-.order-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.order-id{font-family:var(--font-m);font-size:12px;color:var(--cyan);letter-spacing:0.06em}
-.order-status{
-  font-family:var(--font-m);font-size:10px;letter-spacing:0.08em;
-  padding:3px 10px;border-radius:100px;font-weight:600
-}
-.status-new{background:rgba(0,212,255,0.15);color:var(--cyan);border:1px solid rgba(0,212,255,0.3)}
-.status-preparing{background:rgba(255,184,0,0.15);color:var(--yellow);border:1px solid rgba(255,184,0,0.3)}
-.status-ready{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid rgba(0,255,136,0.3)}
-.status-picked{background:rgba(123,47,255,0.15);color:#B080FF;border:1px solid rgba(123,47,255,0.3)}
-.order-customer{font-size:13px;font-weight:500;margin-bottom:4px}
-.order-items-preview{font-size:12px;color:var(--muted)}
-.order-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
-.order-time{font-family:var(--font-m);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
-.order-total{font-family:var(--font-m);font-size:13px;color:var(--text)}
-.order-actions{display:flex;gap:8px}
-.action-btn{
-  font-family:var(--font-m);font-size:11px;letter-spacing:0.04em;
-  padding:6px 14px;border-radius:8px;cursor:pointer;border:none;
-  transition:all 0.15s
-}
-.action-accept{background:rgba(0,255,136,0.12);color:var(--green);border:1px solid rgba(0,255,136,0.25);}
-.action-accept:hover{background:rgba(0,255,136,0.22)}
-.action-reject{background:rgba(255,59,59,0.1);color:var(--red);border:1px solid rgba(255,59,59,0.2);}
-.action-reject:hover{background:rgba(255,59,59,0.2)}
-.action-ready{background:rgba(0,212,255,0.1);color:var(--cyan);border:1px solid rgba(0,212,255,0.25);}
-.action-ready:hover{background:rgba(0,212,255,0.2)}
+/* ── DETAIL ── */
+.detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:240px;color:var(--muted);gap:8px;font-family:var(--fm);font-size:11px;letter-spacing:.06em}
+.ds{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ds:last-child{border-bottom:none}
+.ds-title{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.ds-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.ds-muted{color:var(--muted);font-size:11px;font-family:var(--fm)}
 
-/* ── DETAIL PANEL ── */
-.detail-empty{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  height:300px;color:var(--muted);gap:10px;
-  font-family:var(--font-m);font-size:12px;letter-spacing:0.06em
-}
-.detail-order-id{
-  font-family:var(--font-m);font-size:11px;color:var(--cyan);
-  letter-spacing:0.1em;padding:16px 20px;border-bottom:1px solid var(--border)
-}
-.detail-section{padding:16px 20px;border-bottom:1px solid var(--border2)}
-.detail-section-title{font-size:11px;color:var(--muted);font-family:var(--font-m);letter-spacing:0.08em;margin-bottom:10px;text-transform:uppercase}
-.detail-item{
-  display:flex;justify-content:space-between;align-items:center;
-  font-size:13px;padding:4px 0
-}
-.detail-item-qty{color:var(--cyan);font-family:var(--font-m);margin-right:8px}
-.detail-item-price{color:var(--muted);font-family:var(--font-m);font-size:12px}
-.detail-total{
-  padding:16px 20px;
-  display:flex;justify-content:space-between;
-  font-family:var(--font-d);font-size:16px;font-weight:700
-}
-.prep-time-ctrl{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 20px;border-top:1px solid var(--border)
-}
-.prep-label{font-size:12px;color:var(--muted);flex:1}
-.prep-val{font-family:var(--font-m);font-size:14px;color:var(--cyan)}
-.prep-btns{display:flex;gap:6px}
-.prep-btn{
-  width:28px;height:28px;border-radius:6px;
-  background:var(--surface2);border:1px solid var(--border);
-  color:var(--text);font-size:16px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all 0.15s
-}
-.prep-btn:hover{border-color:rgba(0,212,255,0.4);color:var(--cyan)}
+/* ── MENU ── */
+.mrow{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,.04)}
+.mrow:last-child{border-bottom:none}
+.mrow-name{font-size:13px;font-weight:500}
+.mrow-meta{font-family:var(--fm);font-size:10px;color:var(--muted);margin-top:2px}
+.itoggle{width:36px;height:20px;border-radius:100px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;border:none}
+.itoggle.on{background:var(--green)}.itoggle.off{background:var(--s3)}
+.itoggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.itoggle.on::after{transform:translateX(16px)}
 
-/* ── MENU QUICK TOGGLE ── */
-.menu-item-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 20px;border-bottom:1px solid var(--border2)
-}
-.menu-item-info .name{font-size:13px}
-.menu-item-info .price{font-family:var(--font-m);font-size:11px;color:var(--muted)}
-.item-toggle{
-  width:34px;height:20px;border-radius:100px;
-  cursor:pointer;transition:background 0.2s;position:relative;flex-shrink:0
-}
-.item-toggle.on{background:var(--green)}
-.item-toggle.off{background:var(--surface3)}
-.item-toggle::after{
-  content:'';position:absolute;
-  top:2px;left:2px;width:16px;height:16px;
-  background:white;border-radius:50%;
-  transition:transform 0.2s
-}
-.item-toggle.on::after{transform:translateX(14px)}
+/* ── CHARTS ── */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar-lbl{font-family:var(--fm);font-size:10px;color:var(--muted);width:28px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:8px;background:var(--s2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;background:var(--grad);transition:width 1s}
+.bar-num{font-family:var(--fm);font-size:10px;color:var(--muted);width:50px;text-align:right;flex-shrink:0}
 
-/* ── CHART PLACEHOLDER ── */
-.chart-bar-wrap{padding:16px 20px}
-.chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.chart-bar-label{font-family:var(--font-m);font-size:11px;color:var(--muted);width:24px;text-align:right}
-.chart-bar-track{flex:1;height:8px;background:var(--surface2);border-radius:100px;overflow:hidden}
-.chart-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--cyan),var(--violet));transition:width 1s cubic-bezier(0.4,0,0.2,1)}
-.chart-bar-val{font-family:var(--font-m);font-size:11px;color:var(--muted);width:50px}
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;font-family:var(--fm);font-size:10px;font-weight:600;letter-spacing:.07em;padding:3px 10px;border-radius:100px}
+.b-new{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.3)}
+.b-accepted{background:rgba(255,184,0,.12);color:var(--yellow);border:1px solid rgba(255,184,0,.3)}
+.b-preparing{background:rgba(255,107,53,.12);color:var(--orange);border:1px solid rgba(255,107,53,.3)}
+.b-ready{background:rgba(0,255,136,.12);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+.b-picked{background:rgba(123,47,255,.12);color:#B080FF;border:1px solid rgba(123,47,255,.3)}
+.b-delivered{background:rgba(0,255,136,.08);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.b-cancelled{background:rgba(255,59,59,.12);color:var(--red);border:1px solid rgba(255,59,59,.3)}
 
-/* ── NOTIFICATION TOAST ── */
-.notif{
-  position:fixed;top:72px;right:20px;z-index:200;
-  background:var(--surface);border:1px solid rgba(0,212,255,0.3);
-  border-radius:12px;padding:14px 18px;
-  display:flex;align-items:center;gap:12px;
-  max-width:300px;
-  transform:translateX(330px);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1)
-}
+/* ── NOTIF ── */
+.notif{position:fixed;top:66px;right:18px;z-index:300;background:var(--s1);border:1px solid rgba(0,212,255,.3);border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:10px;transform:translateX(340px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:290px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .notif.show{transform:translateX(0)}
-.notif-icon{font-size:22px}
-.notif-text{font-size:13px;line-height:1.5}
-.notif-title{font-weight:600;color:var(--cyan);font-family:var(--font-m);font-size:11px;letter-spacing:0.06em}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);flex-shrink:0;animation:pulse 1.5s infinite}
+.notif-body{flex:1}.notif-tag{font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:.1em;margin-bottom:2px}
+.notif-msg{font-size:12px;line-height:1.4}
 
-@media(max-width:768px){
-  .sidebar{display:none}
-  .main{margin-left:0}
-  .stats-row{grid-template-columns:repeat(2,1fr)}
-  .section-row{grid-template-columns:1fr}
-}
+/* ── AUTH ── */
+.auth-wall{position:fixed;inset:0;background:var(--bg);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-box{background:var(--s1);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;padding:32px}
+.auth-logo{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px}
+.auth-title{font-family:var(--fd);font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.afield label{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ainput{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s}
+.ainput:focus{border-color:rgba(0,212,255,.4)}.ainput::placeholder{color:var(--muted)}
+.aprimary{background:var(--grad);color:var(--bg);font-family:var(--fm);font-weight:600;font-size:13px;letter-spacing:.06em;padding:13px;border-radius:9px;border:none;cursor:pointer;transition:opacity .2s;width:100%}
+.aprimary:hover{opacity:.85}.aprimary:disabled{opacity:.4;cursor:not-allowed}
+.aerr{background:rgba(255,59,59,.1);border:1px solid rgba(255,59,59,.25);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--red);display:none;margin-bottom:4px}
+.aerr.show{display:block}
+.auth-skip{font-family:var(--fm);font-size:10px;color:var(--muted);text-align:center;margin-top:14px;cursor:pointer;letter-spacing:.06em}
+.auth-skip:hover{color:var(--cyan)}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--s1);border:1px solid rgba(0,255,136,.3);border-radius:9px;padding:11px 18px;display:flex;align-items:center;gap:9px;font-size:13px;font-family:var(--fm);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:310px}
+.toast.show{transform:translateY(0);opacity:1}.toast-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0}
+.toast--err{border-color:rgba(255,59,59,.3)}.toast--err .toast-dot{background:var(--red);box-shadow:0 0 8px var(--red)}
+.toast--info{border-color:rgba(0,212,255,.3)}.toast--info .toast-dot{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
+
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+@media(max-width:700px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
+<!-- AUTH WALL -->
+<div class="auth-wall" id="authWall">
+  <div class="auth-box">
+    <div class="auth-logo">Atlas Delivery</div>
+    <div class="auth-title">Restaurant Panel</div>
+    <div class="auth-sub">Logga in med ditt restaurangkonto för att hantera beställningar och meny i realtid.</div>
+    <div class="aerr" id="aerr"></div>
+    <div class="auth-form">
+      <div class="afield"><label>E-post</label><input class="ainput" id="aEmail" type="email" placeholder="restaurang@email.se"></div>
+      <div class="afield"><label>Lösenord</label><input class="ainput" id="aPwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="aprimary" id="loginBtn" onclick="doLogin()">LOGGA IN</button>
+    </div>
+    <div class="auth-skip" onclick="skipAuth()">Fortsätt utan konto (demoläge) →</div>
+  </div>
+</div>
+
 <!-- SIDEBAR -->
 <aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="sidebar-logo-top">Atlas Delivery</div>
-    <div class="sidebar-logo-main">Restaurang</div>
+  <div class="sb-logo">
+    <div class="sb-logo-tag">Atlas Delivery</div>
+    <div class="sb-logo-main">Restaurang</div>
   </div>
-  <div class="sidebar-rest">
-    <div class="rest-indicator">
-      <div class="rest-dot" id="restDot"></div>
+  <div class="sb-rest">
+    <div class="sb-rest-row">
+      <div class="od" id="restDot"></div>
       <div>
-        <div class="rest-name">Norrmalm Sushi</div>
-        <div class="rest-status" id="restStatusText">ÖPPEN</div>
+        <div class="sb-rest-name" id="sbName">—</div>
+        <div class="sb-rest-status" id="sbStatus">—</div>
       </div>
     </div>
+    <div class="sb-sel">
+      <select id="restSel" onchange="switchRest(this.value)"></select>
+    </div>
   </div>
-  <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="setPage('orders',this)"><span class="nav-icon">📋</span> Beställningar <span class="nav-badge" id="newOrderBadge">3</span></button>
-    <button class="nav-item" onclick="setPage('menu',this)"><span class="nav-icon">🍽️</span> Meny</button>
-    <button class="nav-item" onclick="setPage('analytics',this)"><span class="nav-icon">📊</span> Statistik</button>
-    <button class="nav-item" onclick="setPage('settings',this)"><span class="nav-icon">⚙️</span> Inställningar</button>
+  <nav class="sb-nav">
+    <button class="sb-item active" onclick="setPage('orders',this)"><span class="sb-icon">📋</span>Beställningar<span class="sb-badge" id="newBadge" style="display:none">0</span></button>
+    <button class="sb-item" onclick="setPage('menu',this)"><span class="sb-icon">🍽️</span>Meny</button>
+    <button class="sb-item" onclick="setPage('stats',this)"><span class="sb-icon">📊</span>Statistik</button>
   </nav>
-  <div class="sidebar-bottom">
+  <div class="sb-bottom">
     <div class="toggle-row">
       <span>Restaurang öppen</span>
-      <div class="toggle" id="openToggle" onclick="toggleOpen()"></div>
+      <button class="pill on" id="openPill" onclick="toggleOpen()"></button>
     </div>
   </div>
 </aside>
@@ -311,347 +212,363 @@ body{background:var(--bg);color:var(--text);font-family:var(--font-b);display:fl
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
-    <div class="topbar-title" id="pageTitle">Beställningar</div>
-    <div class="topbar-right">
-      <div class="topbar-time" id="clock">--:--</div>
-      <button class="alarm-btn" onclick="simulateOrder()">
-        + Simulera beställning
-      </button>
+    <div class="tb-title" id="pageTitle">Beställningar</div>
+    <div class="tb-right">
+      <div class="sync-chip"><div class="od on" id="syncDot"></div><span id="syncTxt">ANSLUTER...</span></div>
+      <div class="clock" id="clock">--:--:--</div>
+      <button class="sim-btn" onclick="simulateOrder()">+ Testa beställning</button>
     </div>
   </div>
-
-  <div class="content" id="pageContent">
-    <!-- injected by JS -->
+  <div class="content" id="content">
+    <div style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--muted);gap:10px;font-family:var(--fm);font-size:12px"><div style="width:20px;height:20px;border:2px solid rgba(0,212,255,.2);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite"></div>LADDAR...</div>
   </div>
 </div>
 
-<!-- NOTIFICATION -->
+<!-- NOTIF -->
 <div class="notif" id="notif">
-  <div class="notif-icon">🔔</div>
-  <div class="notif-text">
-    <div class="notif-title">NY BESTÄLLNING</div>
-    <div id="notifText">Ny order inkommen!</div>
+  <div class="notif-dot"></div>
+  <div class="notif-body">
+    <div class="notif-tag" id="notifTag">MEDDELANDE</div>
+    <div class="notif-msg" id="notifMsg">—</div>
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">—</span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ── DATA ──
-let orders = [
-  {id:'ORD-2401',customer:'Erik Lindgren',items:[{n:'California Roll x2',p:230},{n:'Spicy Tuna Roll',p:125}],total:355,status:'new',time:'14:32',address:'Sveavägen 45'},
-  {id:'ORD-2400',customer:'Sara Johansson',items:[{n:'Lax Nigiri x4',p:260},{n:'Miso Soppa',p:45}],total:305,status:'preparing',time:'14:20',address:'Drottninggatan 12'},
-  {id:'ORD-2399',customer:'Mikael Björk',items:[{n:'Tonfisk Sashimi',p:135},{n:'Vegetarian Maki',p:95}],total:230,status:'ready',time:'14:08',address:'Kungsgatan 78'},
-  {id:'ORD-2398',customer:'Anna Persson',items:[{n:'California Roll x3',p:345}],total:345,status:'picked',time:'13:55',address:'Vasagatan 31'},
-];
+const SB = supabase.createClient(
+  'https://vgtdswplzuhbhhlmxrgg.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndGRzd3BsenVoYmhobG14cmdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTY2ODIsImV4cCI6MjA4ODU5MjY4Mn0.82sk-40cQo7NxeRWUgthTzp_fk1TlBcqPchrBGGIFnU'
+);
 
-let selectedOrder = null;
-let isOpen = true;
-let currentPage = 'orders';
-let prepTime = 20;
-let orderCounter = 2402;
+// ── State ─────────────────────────────────────────────────────
+let page      = 'orders';
+let activeRestId = null;
+let restaurants  = [];
+let orders       = [];
+let selectedOId  = null;
 
-const menuItems = [
-  {n:'California Roll',p:115,on:true},
-  {n:'Spicy Tuna Roll',p:125,on:true},
-  {n:'Vegetarian Maki',p:95,on:true},
-  {n:'Lax Nigiri',p:65,on:true},
-  {n:'Tonfisk Sashimi',p:135,on:true},
-  {n:'Bao Buns',p:89,on:false},
-  {n:'Miso Soppa',p:45,on:true},
-];
-
-const salesData = [
-  {day:'Mån',val:78},{day:'Tis',val:92},{day:'Ons',val:65},
-  {day:'Tor',val:110},{day:'Fre',val:145},{day:'Lör',val:188},{day:'Sön',val:130},
-];
-const maxSale = Math.max(...salesData.map(d=>d.val));
-
-// ── CLOCK ──
-function updateClock(){
+// ── Clock ─────────────────────────────────────────────────────
+setInterval(()=>{
   const n=new Date();
-  document.getElementById('clock').textContent=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0')+':'+n.getSeconds().toString().padStart(2,'0');
-}
-updateClock();setInterval(updateClock,1000);
+  document.getElementById('clock').textContent=
+    [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>x.toString().padStart(2,'0')).join(':');
+},1000);
 
-// ── PAGES ──
-function setPage(page,el){
-  currentPage=page;
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+// ── AUTH ──────────────────────────────────────────────────────
+async function doLogin(){
+  const email=document.getElementById('aEmail').value.trim();
+  const pwd=document.getElementById('aPwd').value;
+  const btn=document.getElementById('loginBtn');
+  const err=document.getElementById('aerr');
+  btn.disabled=true; btn.textContent='LOGGAR IN...';
+  err.className='aerr';
+  const{error}=await SB.auth.signInWithPassword({email,password:pwd});
+  if(error){err.textContent=error.message;err.className='aerr show';btn.disabled=false;btn.textContent='LOGGA IN';return}
+  document.getElementById('authWall').style.display='none';
+  await loadAll();
+}
+
+async function skipAuth(){
+  document.getElementById('authWall').style.display='none';
+  await loadAll();
+}
+
+// ── LOAD ──────────────────────────────────────────────────────
+async function loadAll(){
+  const{data,error}=await SB.from('restaurants').select('*,menu_items(*)').order('name');
+  if(error){toast('Fel vid laddning: '+error.message,'err');return}
+  restaurants=data||[];
+
+  const sel=document.getElementById('restSel');
+  sel.innerHTML=restaurants.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  activeRestId=restaurants[0]?.id||null;
+  if(activeRestId) await switchRest(activeRestId,true);
+
+  // Realtime
+  SB.channel('rest-realtime')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},p=>{
+      if(p.new.restaurant_id!==activeRestId)return;
+      orders.unshift(p.new);
+      onNewOrder(p.new);
+      render();
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'orders'},p=>{
+      if(p.new.restaurant_id!==activeRestId)return;
+      orders=orders.map(o=>o.id===p.new.id?p.new:o);
+      if(selectedOId===p.new.id) renderDetail(p.new);
+      render();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'restaurants'},async()=>{
+      await reloadRestaurants();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'menu_items'},async()=>{
+      await reloadRestaurants();
+    })
+    .subscribe(s=>{
+      const ok=s==='SUBSCRIBED';
+      document.getElementById('syncDot').className='od '+(ok?'on':'off');
+      document.getElementById('syncTxt').textContent=ok?'LIVE — SUPABASE':'ANSLUTER...';
+    });
+}
+
+async function reloadRestaurants(){
+  const{data}=await SB.from('restaurants').select('*,menu_items(*)').order('name');
+  if(data){
+    restaurants=data;
+    const r=restaurants.find(x=>x.id===activeRestId);
+    if(r) updateSidebar(r);
+    if(page==='menu') render();
+  }
+}
+
+async function switchRest(id, initial=false){
+  activeRestId=id;
+  if(!initial) document.getElementById('restSel').value=id;
+  const{data,error}=await SB.from('orders').select('*').eq('restaurant_id',id).order('created_at',{ascending:false}).limit(80);
+  if(!error) orders=data||[];
+  const r=restaurants.find(x=>x.id===id);
+  if(r) updateSidebar(r);
+  selectedOId=null;
+  render();
+}
+
+function updateSidebar(r){
+  document.getElementById('sbName').textContent=r.name;
+  document.getElementById('sbStatus').textContent=r.is_open?'ÖPPEN':'STÄNGD';
+  document.getElementById('sbStatus').style.color=r.is_open?'var(--green)':'var(--muted)';
+  document.getElementById('restDot').className='od '+(r.is_open?'on':'off');
+  document.getElementById('openPill').className='pill '+(r.is_open?'on':'off');
+}
+
+// ── TOGGLE OPEN ───────────────────────────────────────────────
+async function toggleOpen(){
+  const r=restaurants.find(x=>x.id===activeRestId);
+  if(!r)return;
+  const{error}=await SB.from('restaurants').update({is_open:!r.is_open}).eq('id',activeRestId);
+  if(error){toast(error.message,'err');return}
+  notify('STATUS',!r.is_open?'Restaurangen är nu öppen!':'Restaurangen är nu stängd.');
+}
+
+// ── PAGES ─────────────────────────────────────────────────────
+const pageTitles={orders:'Beställningar',menu:'Meny',stats:'Statistik'};
+function setPage(p,el){
+  page=p;
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
   if(el) el.classList.add('active');
-  const titles={orders:'Beställningar',menu:'Meny',analytics:'Statistik',settings:'Inställningar'};
-  document.getElementById('pageTitle').textContent = titles[page];
-  renderPage();
+  document.getElementById('pageTitle').textContent=pageTitles[p]||p;
+  selectedOId=null;
+  render();
 }
 
-function renderPage(){
-  const c = document.getElementById('pageContent');
-  if(currentPage==='orders') renderOrders(c);
-  else if(currentPage==='menu') renderMenu(c);
-  else if(currentPage==='analytics') renderAnalytics(c);
-  else if(currentPage==='settings') renderSettings(c);
+function render(){
+  const c=document.getElementById('content');
+  if(page==='orders') renderOrders(c);
+  else if(page==='menu') renderMenu(c);
+  else renderStats(c);
 }
 
-// ── ORDERS ──
+// ── ORDERS ────────────────────────────────────────────────────
 function renderOrders(c){
-  const newCount = orders.filter(o=>o.status==='new').length;
-  document.getElementById('newOrderBadge').textContent = newCount || '';
-  document.getElementById('newOrderBadge').style.display = newCount ? '' : 'none';
+  const r=restaurants.find(x=>x.id===activeRestId);
+  const active=orders.filter(o=>!['delivered','cancelled'].includes(o.status));
+  const newCount=orders.filter(o=>o.status==='new').length;
+  const revenue=orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+Number(o.total),0);
 
-  const today = orders.reduce((s,o)=>s+o.total,0);
-  c.innerHTML = `
+  const badge=document.getElementById('newBadge');
+  badge.style.display=newCount?'':'none';
+  badge.textContent=newCount;
+
+  c.innerHTML=`
     <div class="stats-row">
-      <div class="stat-card" style="--c1:#00D4FF;--c2:#7B2FFF">
-        <div class="stat-label">Idag — Intäkter</div>
-        <div class="stat-val">${today} kr</div>
-        <div class="stat-change up">▲ 12% vs igår</div>
-      </div>
-      <div class="stat-card" style="--c1:#00FF88;--c2:#00D4FF">
-        <div class="stat-label">Aktiva beställningar</div>
-        <div class="stat-val">${orders.filter(o=>o.status!=='picked').length}</div>
-        <div class="stat-change"><span style="color:var(--muted)">${orders.filter(o=>o.status==='new').length} nya</span></div>
-      </div>
-      <div class="stat-card" style="--c1:#FFB800;--c2:#FF6B35">
-        <div class="stat-label">Genomsnittstid</div>
-        <div class="stat-val">${prepTime} min</div>
-        <div class="stat-change down">▲ 2 min vs förra veckan</div>
-      </div>
-      <div class="stat-card" style="--c1:#7B2FFF;--c2:#FF6B35">
-        <div class="stat-label">Betyg (30d)</div>
-        <div class="stat-val">4.8 ⭐</div>
-        <div class="stat-change up">▲ 0.1 denna månaden</div>
-      </div>
+      <div class="sc"><div class="sc-label">Intäkter (session)</div><div class="sc-val">${revenue.toFixed(0)} kr</div><div class="sc-sub" style="color:var(--muted)">${orders.length} ordrar</div></div>
+      <div class="sc"><div class="sc-label">Aktiva</div><div class="sc-val">${active.length}</div><div class="sc-sub" style="color:var(--orange)">${newCount} nya</div></div>
+      <div class="sc"><div class="sc-label">Betyg</div><div class="sc-val">${r?.rating||'—'} ⭐</div><div class="sc-sub" style="color:var(--muted)">${r?.review_count||0} rec</div></div>
+      <div class="sc"><div class="sc-label">Tillagningstid</div><div class="sc-val">${r?.prep_time_min||20} min</div><div class="sc-sub" style="color:var(--muted)">Estimerat</div></div>
     </div>
-    <div class="section-row">
+    <div class="two-col">
       <div class="panel">
-        <div class="panel-header">
-          <div class="panel-title">Aktiva beställningar</div>
-          <button class="panel-action" onclick="renderPage()">Uppdatera</button>
-        </div>
+        <div class="ph"><div class="ph-title">Live-beställningar (${orders.length})</div><button class="ph-btn" onclick="switchRest(activeRestId)">↺ Uppdatera</button></div>
         <div id="orderList">
-          ${orders.map(o=>renderOrderItem(o)).join('')}
+          ${orders.length===0?'<div class="no-orders">INGA BESTÄLLNINGAR ÄN — Testa med knappen ovan</div>':''}
+          ${orders.map(o=>orderRowHTML(o)).join('')}
         </div>
       </div>
       <div class="panel" id="detailPanel">
-        <div class="detail-empty">
-          <div style="font-size:40px">📋</div>
-          VÄLJ EN BESTÄLLNING
-        </div>
+        <div class="detail-empty"><div style="font-size:34px">📋</div>VÄLJ EN BESTÄLLNING</div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-function renderOrderItem(o){
-  const statusLabel={new:'NY',preparing:'TILLAGAS',ready:'KLAR',picked:'HÄMTAD'};
-  return `
-    <div class="order-item ${selectedOrder===o.id?'selected':''}" onclick="selectOrder('${o.id}')">
-      <div class="order-header">
-        <div class="order-id">${o.id}</div>
-        <div class="order-status status-${o.status}">${statusLabel[o.status]}</div>
-      </div>
-      <div class="order-customer">${o.customer}</div>
-      <div class="order-items-preview">${o.items.map(i=>i.n).join(', ')}</div>
-      <div class="order-footer">
-        <div class="order-time">🕐 ${o.time}</div>
-        <div class="order-total">${o.total} kr</div>
-      </div>
-      <div class="order-actions" style="margin-top:10px">
-        ${o.status==='new'?`<button class="action-btn action-accept" onclick="event.stopPropagation();updateStatus('${o.id}','preparing')">✓ Acceptera</button><button class="action-btn action-reject" onclick="event.stopPropagation();rejectOrder('${o.id}')">✕ Avvisa</button>`:''}
-        ${o.status==='preparing'?`<button class="action-btn action-ready" onclick="event.stopPropagation();updateStatus('${o.id}','ready')">Markera klar</button>`:''}
-      </div>
+const SL={new:'NY',accepted:'MOTTAGEN',preparing:'TILLAGAS',ready:'KLAR',picked:'HÄMTAD',delivered:'LEVERERAD',cancelled:'ANNULLERAD'};
+function orderRowHTML(o){
+  const items=typeof o.items==='string'?JSON.parse(o.items):o.items;
+  const preview=(items||[]).map(i=>`${i.qty}× ${i.name}`).join(', ');
+  const t=new Date(o.created_at);
+  const tStr=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');
+  return`<div class="orow${selectedOId===o.id?' selected':''}" onclick="selectOrder('${o.id}')">
+    <div class="orow-top"><span class="oid">${o.id}</span><span class="badge b-${o.status}">${SL[o.status]||o.status}</span></div>
+    <div class="ocust">${o.customer_name}</div>
+    <div class="oprev">${preview}</div>
+    <div class="orow-bot"><span class="otime">🕐 ${tStr}</span><span class="ototal">${Number(o.total).toFixed(0)} kr</span></div>
+    <div class="oacts">
+      ${o.status==='new'?`<button class="abtn accept" onclick="event.stopPropagation();upd('${o.id}','accepted')">✓ Acceptera</button><button class="abtn reject" onclick="event.stopPropagation();upd('${o.id}','cancelled')">✕</button>`:''}
+      ${o.status==='accepted'?`<button class="abtn readybtn" onclick="event.stopPropagation();upd('${o.id}','preparing')">Börja tillaga</button>`:''}
+      ${o.status==='preparing'?`<button class="abtn readybtn" onclick="event.stopPropagation();upd('${o.id}','ready')">Markera klar ✓</button>`:''}
     </div>
-  `;
+  </div>`;
 }
 
 function selectOrder(id){
-  selectedOrder = id;
-  const o = orders.find(x=>x.id===id);
-  const dp = document.getElementById('detailPanel');
-  if(!dp || !o) return;
-  const statusLabel={new:'NY',preparing:'TILLAGAS',ready:'KLAR',picked:'HÄMTAD'};
-  dp.innerHTML = `
-    <div class="detail-order-id">${o.id} — <span class="order-status status-${o.status}">${statusLabel[o.status]}</span></div>
-    <div class="detail-section">
-      <div class="detail-section-title">Kund</div>
-      <div class="detail-item"><span>${o.customer}</span></div>
-      <div class="detail-item" style="color:var(--muted);font-size:12px">📍 ${o.address}</div>
-    </div>
-    <div class="detail-section">
-      <div class="detail-section-title">Beställda rätter</div>
-      ${o.items.map(i=>`
-        <div class="detail-item">
-          <span>${i.n}</span>
-          <span class="detail-item-price">${i.p} kr</span>
-        </div>
-      `).join('')}
-    </div>
-    <div class="detail-total"><span>Totalt</span><span style="color:var(--cyan)">${o.total} kr</span></div>
-    <div class="prep-time-ctrl">
-      <div class="prep-label">Tillagingstid</div>
-      <div class="prep-val" id="prepDisplay">${prepTime} min</div>
-      <div class="prep-btns">
-        <button class="prep-btn" onclick="changePrepTime(-5)">−</button>
-        <button class="prep-btn" onclick="changePrepTime(5)">+</button>
-      </div>
-    </div>
-  `;
-  document.querySelectorAll('.order-item').forEach(el=>el.classList.remove('selected'));
-  document.querySelectorAll('.order-item').forEach(el=>{
-    if(el.querySelector('.order-id').textContent===id) el.classList.add('selected');
+  selectedOId=id;
+  document.querySelectorAll('.orow').forEach(el=>{
+    el.classList.toggle('selected',el.querySelector('.oid')?.textContent===id);
   });
+  const o=orders.find(x=>x.id===id);
+  if(o) renderDetail(o);
 }
 
-function updateStatus(id, newStatus){
-  const o = orders.find(x=>x.id===id);
-  if(o) o.status=newStatus;
-  renderPage();
-  showNotif(`${id} uppdaterad → ${newStatus.toUpperCase()}`);
-}
-function rejectOrder(id){
-  orders = orders.filter(x=>x.id!==id);
-  renderPage();
-  showNotif(`${id} avvisad`);
-}
-function changePrepTime(d){
-  prepTime=Math.max(5,prepTime+d);
-  const el=document.getElementById('prepDisplay');
-  if(el) el.textContent=prepTime+' min';
+function renderDetail(o){
+  const dp=document.getElementById('detailPanel');
+  if(!dp)return;
+  const items=typeof o.items==='string'?JSON.parse(o.items):o.items;
+  dp.innerHTML=`
+    <div class="ph"><div class="ph-title">${o.id}</div><span class="badge b-${o.status}">${SL[o.status]}</span></div>
+    <div class="ds"><div class="ds-title">Kund</div>
+      <div class="ds-row">${o.customer_name}</div>
+      <div class="ds-row ds-muted">📍 ${o.address}</div>
+      ${o.customer_email?`<div class="ds-row ds-muted">✉️ ${o.customer_email}</div>`:''}
+      ${o.notes?`<div class="ds-row ds-muted">📝 ${o.notes}</div>`:''}
+    </div>
+    <div class="ds"><div class="ds-title">Artiklar</div>
+      ${(items||[]).map(i=>`<div class="ds-row"><span>${i.qty}× ${i.name}</span><span class="ds-muted">${(i.price*i.qty).toFixed(0)} kr</span></div>`).join('')}
+    </div>
+    <div style="padding:13px 18px;display:flex;justify-content:space-between;font-family:var(--fd);font-size:16px;font-weight:700">
+      <span>Totalt</span><span style="color:var(--cyan)">${Number(o.total).toFixed(0)} kr</span>
+    </div>
+    ${o.rider_id?`<div class="ds"><div class="ds-title">Bud</div><div class="ds-row">🛵 Tilldelad</div></div>`:''}
+    <div style="padding:13px 18px;display:flex;flex-direction:column;gap:8px">
+      ${o.status==='new'?`<button onclick="upd('${o.id}','accepted')" style="background:var(--grad);color:var(--bg);font-family:var(--fm);font-weight:600;font-size:12px;padding:12px;border-radius:9px;border:none;cursor:pointer;letter-spacing:.05em">ACCEPTERA BESTÄLLNING</button>`:''}
+      ${o.status==='accepted'?`<button onclick="upd('${o.id}','preparing')" style="background:rgba(0,212,255,.1);color:var(--cyan);font-family:var(--fm);font-size:12px;padding:11px;border-radius:9px;border:1px solid rgba(0,212,255,.25);cursor:pointer">BÖRJA TILLAGA</button>`:''}
+      ${o.status==='preparing'?`<button onclick="upd('${o.id}','ready')" style="background:rgba(0,255,136,.1);color:var(--green);font-family:var(--fm);font-size:12px;padding:11px;border-radius:9px;border:1px solid rgba(0,255,136,.25);cursor:pointer">MARKERA KLAR ✓</button>`:''}
+    </div>`;
 }
 
-// ── MENU ──
+async function upd(id,status){
+  const{error}=await SB.from('orders').update({status}).eq('id',id);
+  if(error){toast(error.message,'err');return}
+  notify('STATUS',`${id} → ${SL[status]}`);
+}
+
+function onNewOrder(o){
+  notify('NY BESTÄLLNING',`${o.id} från ${o.customer_name}!`);
+  document.getElementById('sbName').style.animation='none';
+  requestAnimationFrame(()=>{ document.getElementById('sbName').style.animation='ring .6s 3'; });
+  // Flash row when rendered
+  setTimeout(()=>{
+    const rows=document.querySelectorAll('.orow');
+    rows.forEach(r=>{ if(r.querySelector('.oid')?.textContent===o.id) r.classList.add('new-flash'); });
+  },100);
+}
+
+// ── MENU ──────────────────────────────────────────────────────
 function renderMenu(c){
-  c.innerHTML = `
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-title">Menyhantering</div>
-        <button class="panel-action" onclick="alert('Lägg till rätt — ansluts till backend')">+ Lägg till</button>
-      </div>
-      ${menuItems.map((item,i)=>`
-        <div class="menu-item-row">
-          <div class="menu-item-info">
-            <div class="name">${item.n}</div>
-            <div class="price">${item.p} kr</div>
+  const r=restaurants.find(x=>x.id===activeRestId);
+  if(!r){c.innerHTML='<div class="no-orders">Ingen restaurang vald</div>';return}
+  const items=(r.menu_items||[]).sort((a,b)=>a.sort_order-b.sort_order);
+  const groups={};
+  items.forEach(i=>{if(!groups[i.category])groups[i.category]=[];groups[i.category].push(i)});
+
+  c.innerHTML=`<div class="panel">
+    <div class="ph">
+      <div class="ph-title">Meny — ${r.name}</div>
+      <span style="font-family:var(--fm);font-size:10px;color:var(--muted)">${items.filter(i=>i.is_available).length}/${items.length} tillgängliga</span>
+    </div>
+    ${Object.entries(groups).map(([cat,its])=>`
+      <div style="padding:9px 18px 2px;font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;border-top:1px solid var(--border)">${cat}</div>
+      ${its.map(item=>`
+        <div class="mrow">
+          <div>
+            <div class="mrow-name">${item.name}</div>
+            <div class="mrow-meta">${item.price} kr · ${item.is_available?'<span style="color:var(--green)">Tillgänglig</span>':'<span style="color:var(--red)">Slutsåld</span>'}</div>
           </div>
-          <div class="item-toggle ${item.on?'on':'off'}" onclick="toggleMenuItem(${i})"></div>
+          <button class="itoggle ${item.is_available?'on':'off'}" onclick="toggleItem('${item.id}',${!item.is_available})"></button>
         </div>
       `).join('')}
-    </div>
-  `;
-}
-function toggleMenuItem(i){
-  menuItems[i].on=!menuItems[i].on;
-  renderPage();
+    `).join('')}
+  </div>`;
 }
 
-// ── ANALYTICS ──
-function renderAnalytics(c){
-  c.innerHTML = `
+async function toggleItem(itemId,available){
+  const{error}=await SB.from('menu_items').update({is_available:available}).eq('id',itemId);
+  if(error){toast(error.message,'err');return}
+  notify('MENY',available?'Rätten är nu tillgänglig':'Rätten är markerad slutsåld');
+}
+
+// ── STATS ─────────────────────────────────────────────────────
+function renderStats(c){
+  const revenue=orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+Number(o.total),0);
+  const delivered=orders.filter(o=>o.status==='delivered').length;
+  const r=restaurants.find(x=>x.id===activeRestId);
+  const days=[{d:'Mån',v:78},{d:'Tis',v:92},{d:'Ons',v:65},{d:'Tor',v:110},{d:'Fre',v:145},{d:'Lör',v:188},{d:'Sön',v:130}];
+  const max=Math.max(...days.map(d=>d.v));
+  c.innerHTML=`
     <div class="stats-row">
-      <div class="stat-card" style="--c1:#00D4FF;--c2:#7B2FFF">
-        <div class="stat-label">Denna vecka</div>
-        <div class="stat-val">808 kr</div>
-        <div class="stat-change up">▲ 18% vs förra veckan</div>
-      </div>
-      <div class="stat-card" style="--c1:#00FF88;--c2:#00D4FF">
-        <div class="stat-label">Beställningar (7d)</div>
-        <div class="stat-val">47</div>
-        <div class="stat-change up">▲ 5 vs förra veckan</div>
-      </div>
-      <div class="stat-card" style="--c1:#FFB800;--c2:#FF6B35">
-        <div class="stat-label">Snitt per order</div>
-        <div class="stat-val">172 kr</div>
-        <div class="stat-change"><span style="color:var(--muted)">Stabil</span></div>
-      </div>
-      <div class="stat-card" style="--c1:#7B2FFF;--c2:#FF3B3B">
-        <div class="stat-label">Annullerade</div>
-        <div class="stat-val">2</div>
-        <div class="stat-change down">▼ 1 vs förra veckan</div>
-      </div>
+      <div class="sc"><div class="sc-label">Totalt (session)</div><div class="sc-val">${revenue.toFixed(0)} kr</div></div>
+      <div class="sc"><div class="sc-label">Ordrar</div><div class="sc-val">${orders.length}</div></div>
+      <div class="sc"><div class="sc-label">Levererade</div><div class="sc-val">${delivered}</div></div>
+      <div class="sc"><div class="sc-label">Betyg</div><div class="sc-val">${r?.rating||'—'} ⭐</div></div>
     </div>
-    <div class="panel" style="margin-top:0">
-      <div class="panel-header"><div class="panel-title">Beställningar per dag</div></div>
-      <div class="chart-bar-wrap">
-        ${salesData.map(d=>`
-          <div class="chart-bar-row">
-            <div class="chart-bar-label">${d.day}</div>
-            <div class="chart-bar-track"><div class="chart-bar-fill" style="width:${(d.val/maxSale*100).toFixed(0)}%"></div></div>
-            <div class="chart-bar-val">${d.val} kr</div>
-          </div>
-        `).join('')}
+    <div class="panel">
+      <div class="ph"><div class="ph-title">Ordrar per dag (provdata)</div></div>
+      <div style="padding:16px 18px">
+        ${days.map(d=>`<div class="bar-row"><div class="bar-lbl">${d.d}</div><div class="bar-track"><div class="bar-fill" style="width:${(d.v/max*100).toFixed(0)}%"></div></div><div class="bar-num">${d.v}</div></div>`).join('')}
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-// ── SETTINGS ──
-function renderSettings(c){
-  c.innerHTML = `
-    <div class="panel" style="max-width:500px">
-      <div class="panel-header"><div class="panel-title">Restauranginställningar</div></div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
-        ${[
-          ['Restaurangnamn','Norrmalm Sushi'],
-          ['Adress','Sveavägen 100, Stockholm'],
-          ['Telefon','+46 8 123 456'],
-          ['Öppettider','11:00 – 22:00'],
-        ].map(([label,val])=>`
-          <div>
-            <div style="font-family:var(--font-m);font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">${label}</div>
-            <input value="${val}" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-family:var(--font-b);font-size:13px;outline:none" onfocus="this.style.borderColor='rgba(0,212,255,0.4)'" onblur="this.style.borderColor='var(--border)'">
-          </div>
-        `).join('')}
-        <button style="margin-top:8px;background:linear-gradient(135deg,var(--cyan),var(--violet));color:#07070E;font-family:var(--font-m);font-weight:600;font-size:13px;letter-spacing:0.06em;padding:12px;border-radius:10px;border:none;cursor:pointer" onclick="showNotif('Inställningar sparade!')">Spara ändringar</button>
-      </div>
-    </div>
-  `;
+// ── SIMULATE ─────────────────────────────────────────────────
+async function simulateOrder(){
+  const r=restaurants.find(x=>x.id===activeRestId);
+  if(!r)return;
+  const avail=(r.menu_items||[]).filter(m=>m.is_available);
+  if(!avail.length){toast('Inga tillgängliga rätter','err');return}
+  const item=avail[Math.floor(Math.random()*avail.length)];
+  const names=['Erik L.','Sara J.','Mikael B.','Anna P.','Lars K.','Sofia W.'];
+  const addrs=['Sveavägen 45','Drottninggatan 12','Kungsgatan 78','Hornsgatan 22'];
+  const name=names[Math.floor(Math.random()*names.length)];
+  const addr=addrs[Math.floor(Math.random()*addrs.length)]+', Stockholm';
+
+  const{data:oid}=await SB.rpc('next_order_id');
+  const{error}=await SB.from('orders').insert({
+    id:oid, restaurant_id:activeRestId,
+    customer_name:name, address:addr,
+    items:JSON.stringify([{itemId:item.id,name:item.name,price:item.price,qty:1}]),
+    total:item.price, status:'new',
+  });
+  if(error) toast(error.message,'err');
+  else toast(`Testorder ${oid} skapad!`,'info');
 }
 
-// ── OPEN TOGGLE ──
-function toggleOpen(){
-  isOpen=!isOpen;
-  const t=document.getElementById('openToggle');
-  const d=document.getElementById('restDot');
-  const s=document.getElementById('restStatusText');
-  t.classList.toggle('off',!isOpen);
-  d.style.background=isOpen?'var(--green)':'var(--muted)';
-  d.style.boxShadow=isOpen?'0 0 8px var(--green)':'none';
-  s.textContent=isOpen?'ÖPPEN':'STÄNGD';
-  s.style.color=isOpen?'var(--green)':'var(--muted)';
-  showNotif(isOpen?'Restaurangen är nu öppen!':'Restaurangen är nu stängd.');
-}
-
-// ── SIMULATE NEW ORDER ──
-function simulateOrder(){
-  const names=['Lars Eriksson','Petra Holm','Jonas Lindqvist','Maja Strand'];
-  const items=[
-    [{n:'California Roll x2',p:230}],
-    [{n:'Spicy Tuna Roll',p:125},{n:'Miso Soppa',p:45}],
-    [{n:'Tonfisk Sashimi x2',p:270}],
-  ];
-  const sample=items[Math.floor(Math.random()*items.length)];
-  const total=sample.reduce((s,i)=>s+i.p,0);
-  const n=new Date();
-  const time=n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
-  const order={
-    id:`ORD-${orderCounter++}`,
-    customer:names[Math.floor(Math.random()*names.length)],
-    items:sample,total,status:'new',time,
-    address:'Stockholm'
-  };
-  orders.unshift(order);
-  if(currentPage==='orders') renderPage();
-  showNotif(`Ny beställning från ${order.customer}!`);
-}
-
-// ── NOTIFICATION ──
-function showNotif(msg){
-  document.getElementById('notifText').textContent=msg;
+// ── NOTIFY / TOAST ───────────────────────────────────────────
+let _nt;
+function notify(tag,msg){
+  document.getElementById('notifTag').textContent=tag;
+  document.getElementById('notifMsg').textContent=msg;
   const el=document.getElementById('notif');
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),3000);
+  el.classList.add('show');clearTimeout(_nt);
+  _nt=setTimeout(()=>el.classList.remove('show'),3500);
 }
-
-// ── INIT ──
-renderPage();
+let _tt;
+function toast(msg,type=''){
+  document.getElementById('toastMsg').textContent=msg;
+  const el=document.getElementById('toast');
+  el.className='toast'+(type?` toast--${type}`:'');
+  el.classList.add('show');clearTimeout(_tt);
+  _tt=setTimeout(()=>el.classList.remove('show'),3000);
+}
 </script>
 </body>
 </html>
