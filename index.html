@@ -4,1299 +4,575 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Atlas Delivery — Restaurant</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #070710;
-  --bg2: #0d0d1a;
-  --bg3: #12121f;
-  --card: #141428;
-  --card2: #1a1a30;
-  --border: rgba(0,212,255,0.12);
-  --cyan: #00D4FF;
-  --violet: #7B2FFF;
-  --green: #00FF9D;
-  --orange: #FF6B35;
-  --red: #FF3B5C;
-  --yellow: #FFD700;
-  --text: #E8E8F0;
-  --text2: #9090B0;
-  --text3: #5a5a7a;
-  --font: 'Syne', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+:root{--bg:#07070E;--s1:#0F0F1A;--s2:#161625;--s3:#1C1C2E;--border:rgba(0,212,255,.10);--cyan:#00D4FF;--violet:#7B2FFF;--orange:#FF6B35;--green:#00FF88;--red:#FF3B3B;--yellow:#FFB800;--text:#E8E8F0;--muted:#5A5A78;--fd:'Syne',sans-serif;--fb:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace;--grad:linear-gradient(135deg,#00D4FF,#7B2FFF);--tr:200ms cubic-bezier(.4,0,.2,1)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);-webkit-font-smoothing:antialiased;display:flex;min-height:100vh}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,212,255,.18);border-radius:4px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slidein{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(-12deg)}30%{transform:rotate(12deg)}45%{transform:rotate(-8deg)}60%{transform:rotate(8deg)}}
 
-/* ── LOGIN ── */
-#loginScreen{
-  display:flex;align-items:center;justify-content:center;
-  min-height:100vh;
-  background:radial-gradient(ellipse at 30% 40%, rgba(0,212,255,0.06) 0%, transparent 60%),
-             radial-gradient(ellipse at 70% 60%, rgba(123,47,255,0.06) 0%, transparent 60%),
-             var(--bg);
-}
-.login-box{
-  width:400px;padding:48px 40px;
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:20px;
-  box-shadow:0 0 60px rgba(0,212,255,0.05);
-}
-.login-logo{text-align:center;margin-bottom:32px}
-.login-logo .brand{font-size:11px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;margin-bottom:4px}
-.login-logo h1{font-size:26px;font-weight:800;color:var(--text)}
-.login-logo .accent{color:var(--cyan)}
-.login-logo .role-badge{
-  display:inline-block;margin-top:10px;padding:4px 14px;
-  background:rgba(255,107,53,0.15);border:1px solid rgba(255,107,53,0.3);
-  border-radius:20px;font-size:11px;color:var(--orange);letter-spacing:2px;
-}
-.form-group{margin-bottom:18px}
-.form-group label{display:block;font-size:11px;letter-spacing:2px;color:var(--text2);margin-bottom:8px;text-transform:uppercase}
-.form-group input{
-  width:100%;padding:14px 16px;
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:10px;color:var(--text);font-family:var(--mono);font-size:14px;
-  outline:none;transition:.2s;
-}
-.form-group input:focus{border-color:var(--cyan);background:var(--bg2)}
-.form-group input::placeholder{color:var(--text3)}
-.btn-login{
-  width:100%;padding:15px;margin-top:8px;
-  background:linear-gradient(135deg,var(--cyan),var(--violet));
-  border:none;border-radius:10px;
-  color:#000;font-family:var(--font);font-size:15px;font-weight:700;
-  cursor:pointer;letter-spacing:1px;transition:.2s;
-}
-.btn-login:hover{opacity:.9;transform:translateY(-1px)}
-.login-err{
-  margin-top:14px;padding:12px;
-  background:rgba(255,59,92,0.1);border:1px solid rgba(255,59,92,0.3);
-  border-radius:8px;color:var(--red);font-size:13px;text-align:center;display:none;
-}
+/* ── SIDEBAR ── */
+.sidebar{width:230px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--border);position:fixed;top:0;bottom:0;left:0;z-index:50;display:flex;flex-direction:column}
+.sb-logo{padding:22px 18px 16px;border-bottom:1px solid var(--border)}
+.sb-logo-tag{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px}
+.sb-logo-main{font-family:var(--fd);font-size:15px;font-weight:700;color:var(--cyan)}
+.sb-rest{padding:14px 18px;border-bottom:1px solid var(--border)}
+.sb-rest-row{display:flex;align-items:center;gap:8px}
+.sb-rest-name{font-size:13px;font-weight:600;line-height:1.2}
+.sb-rest-status{font-family:var(--fm);font-size:9px;letter-spacing:.06em;margin-top:2px}
+.od{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.od.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.od.off{background:var(--muted)}
+.sb-sel{margin-top:10px}
+.sb-sel select{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-family:var(--fm);font-size:11px;outline:none;cursor:pointer}
+.sb-nav{flex:1;padding:8px 0;overflow-y:auto}
+.sb-item{display:flex;align-items:center;gap:9px;padding:9px 18px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .15s;border:none;background:none;width:100%;text-align:left;position:relative}
+.sb-item:hover{color:var(--text);background:rgba(255,255,255,.025)}
+.sb-item.active{color:var(--cyan);background:rgba(0,212,255,.05)}
+.sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:2px;background:var(--cyan);border-radius:0 2px 2px 0}
+.sb-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--orange);color:var(--bg);font-family:var(--fm);font-size:9px;font-weight:700;padding:2px 7px;border-radius:100px;min-width:18px;text-align:center}
+.sb-bottom{padding:14px 18px;border-top:1px solid var(--border)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+.pill{width:44px;height:24px;border-radius:100px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.pill.on{background:var(--green)}.pill.off{background:var(--s3)}
+.pill::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.pill.on::after{transform:translateX(20px)}
 
-/* ── APP SHELL ── */
-#appShell{display:none;flex-direction:row;min-height:100vh}
+/* ── MAIN ── */
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{height:56px;padding:0 24px;background:rgba(5,5,12,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.tb-title{font-family:var(--fd);font-size:16px;font-weight:700}
+.tb-right{display:flex;align-items:center;gap:12px}
+.clock{font-family:var(--fm);font-size:12px;color:var(--muted)}
+.sync-chip{display:flex;align-items:center;gap:6px;font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:.06em}
+.sim-btn{background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);color:var(--orange);font-family:var(--fm);font-size:11px;padding:6px 14px;border-radius:8px;cursor:pointer;letter-spacing:.04em;transition:all .2s}
+.sim-btn:hover{background:rgba(255,107,53,.2)}
+.content{padding:22px;flex:1}
 
-/* SIDEBAR */
-.sidebar{
-  width:240px;min-height:100vh;
-  background:var(--bg2);border-right:1px solid var(--border);
-  display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;
-}
-.sidebar-header{padding:24px 20px;border-bottom:1px solid var(--border)}
-.sidebar-brand{font-size:10px;letter-spacing:3px;color:var(--text3);text-transform:uppercase}
-.sidebar-name{font-size:18px;font-weight:800;color:var(--text);margin-top:2px}
-.sidebar-name .dot{color:var(--orange)}
-.status-toggle{
-  margin-top:12px;display:flex;align-items:center;gap:10px;
-  padding:10px 14px;background:var(--card);border-radius:10px;
-  cursor:pointer;border:1px solid var(--border);transition:.2s;
-}
-.status-toggle:hover{border-color:var(--green)}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--red);transition:.3s}
-.status-dot.open{background:var(--green);box-shadow:0 0 8px var(--green)}
-.status-label{font-size:12px;color:var(--text2);font-family:var(--mono)}
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px}
+.sc{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:15px;position:relative;overflow:hidden;transition:border-color .2s}
+.sc:hover{border-color:rgba(0,212,255,.2)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:.7}
+.sc-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:7px}
+.sc-val{font-family:var(--fd);font-size:26px;font-weight:800;line-height:1}
+.sc-sub{font-family:var(--fm);font-size:10px;margin-top:5px}
 
-.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
-.nav-item{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 14px;border-radius:10px;cursor:pointer;
-  color:var(--text2);font-size:14px;font-weight:600;
-  transition:.2s;margin-bottom:2px;
-}
-.nav-item:hover{background:var(--card);color:var(--text)}
-.nav-item.active{background:rgba(0,212,255,0.1);color:var(--cyan);border:1px solid rgba(0,212,255,0.2)}
-.nav-icon{font-size:18px;width:24px;text-align:center}
-.nav-badge{
-  margin-left:auto;background:var(--red);color:#fff;
-  font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;
-  font-family:var(--mono);
-}
+/* ── TWO COL ── */
+.two-col{display:grid;grid-template-columns:1fr 300px;gap:16px}
+.panel{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.ph{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ph-title{font-family:var(--fd);font-size:14px;font-weight:700}
+.ph-btn{font-family:var(--fm);font-size:11px;color:var(--cyan);border:none;background:none;cursor:pointer;padding:0}
 
-.sidebar-footer{padding:16px 12px;border-top:1px solid var(--border)}
-.logout-btn{
-  width:100%;padding:10px;background:transparent;
-  border:1px solid var(--border);border-radius:8px;
-  color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;transition:.2s;
-}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
+/* ── ORDER ROWS ── */
+.orow{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .15s;position:relative}
+.orow:hover{background:rgba(255,255,255,.02)}
+.orow.selected{background:rgba(0,212,255,.04);border-left:2px solid var(--cyan)}
+.orow.new-flash{animation:newflash .6s ease}
+@keyframes newflash{0%{background:rgba(0,212,255,.15)}100%{background:transparent}}
+.orow-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.oid{font-family:var(--fm);font-size:11px;color:var(--cyan);letter-spacing:.06em}
+.ocust{font-size:13px;font-weight:500}
+.oprev{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.orow-bot{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.otime{font-family:var(--fm);font-size:10px;color:var(--muted)}
+.ototal{font-family:var(--fm);font-size:12px}
+.oacts{display:flex;gap:6px;margin-top:8px}
+.abtn{font-family:var(--fm);font-size:10px;letter-spacing:.04em;padding:5px 12px;border-radius:7px;cursor:pointer;border:none;transition:all .15s}
+.accept{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}.accept:hover{background:rgba(0,255,136,.2)}
+.reject{background:rgba(255,59,59,.1);color:var(--red);border:1px solid rgba(255,59,59,.2)}.reject:hover{background:rgba(255,59,59,.2)}
+.readybtn{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}.readybtn:hover{background:rgba(0,212,255,.2)}
+.no-orders{padding:48px;text-align:center;color:var(--muted);font-family:var(--fm);font-size:12px;letter-spacing:.06em}
 
-/* MAIN */
-.main{margin-left:240px;flex:1;padding:28px;min-height:100vh}
-.page-header{margin-bottom:28px}
-.page-title{font-size:28px;font-weight:800;color:var(--text)}
-.page-sub{font-size:13px;color:var(--text2);margin-top:4px;font-family:var(--mono)}
+/* ── DETAIL ── */
+.detail-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:240px;color:var(--muted);gap:8px;font-family:var(--fm);font-size:11px;letter-spacing:.06em}
+.ds{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.04)}
+.ds:last-child{border-bottom:none}
+.ds-title{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}
+.ds-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.ds-muted{color:var(--muted);font-size:11px;font-family:var(--fm)}
 
-/* KANBAN */
-.kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;min-height:500px}
-.col-header{
-  padding:12px 16px;border-radius:10px 10px 0 0;
-  font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.col-body{
-  background:var(--card);border:1px solid var(--border);border-top:none;
-  border-radius:0 0 10px 10px;padding:12px;min-height:400px;
-}
-.col-nya .col-header{background:rgba(0,212,255,0.1);color:var(--cyan);border:1px solid rgba(0,212,255,0.2);border-bottom:none}
-.col-tillagas .col-header{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);border-bottom:none}
-.col-klar .col-header{background:rgba(0,255,157,0.1);color:var(--green);border:1px solid rgba(0,255,157,0.2);border-bottom:none}
-.col-hamtad .col-header{background:rgba(123,47,255,0.1);color:var(--violet);border:1px solid rgba(123,47,255,0.2);border-bottom:none}
+/* ── MENU ── */
+.mrow{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid rgba(255,255,255,.04)}
+.mrow:last-child{border-bottom:none}
+.mrow-name{font-size:13px;font-weight:500}
+.mrow-meta{font-family:var(--fm);font-size:10px;color:var(--muted);margin-top:2px}
+.itoggle{width:36px;height:20px;border-radius:100px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;border:none}
+.itoggle.on{background:var(--green)}.itoggle.off{background:var(--s3)}
+.itoggle::after{content:'';position:absolute;top:2px;left:2px;width:16px;height:16px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.itoggle.on::after{transform:translateX(16px)}
 
-/* ORDER CARD */
-.order-card{
-  background:var(--card2);border:1px solid var(--border);border-radius:10px;
-  padding:14px;margin-bottom:10px;cursor:pointer;
-  transition:.2s;position:relative;
-}
-.order-card:hover{border-color:var(--cyan);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,212,255,0.1)}
-.order-card:hover .order-hologram{display:block}
-.order-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
-.order-id{font-family:var(--mono);font-size:12px;color:var(--cyan);font-weight:500}
-.order-time{font-family:var(--mono);font-size:11px;color:var(--text2)}
-.order-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
-.order-items{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.4}
-.order-footer{display:flex;justify-content:space-between;align-items:center}
-.order-total{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--green)}
-.order-actions{display:flex;gap:6px}
-.btn-action{
-  padding:6px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;
-  font-weight:600;cursor:pointer;border:none;transition:.2s;
-}
-.btn-accept{background:rgba(0,212,255,0.2);color:var(--cyan);border:1px solid rgba(0,212,255,0.4)}
-.btn-accept:hover{background:var(--cyan);color:#000}
-.btn-ready{background:rgba(0,255,157,0.2);color:var(--green);border:1px solid rgba(0,255,157,0.4)}
-.btn-ready:hover{background:var(--green);color:#000}
-.btn-chat{background:rgba(123,47,255,0.2);color:var(--violet);border:1px solid rgba(123,47,255,0.4)}
-.btn-chat:hover{background:var(--violet);color:#fff}
+/* ── CHARTS ── */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar-lbl{font-family:var(--fm);font-size:10px;color:var(--muted);width:28px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:8px;background:var(--s2);border-radius:100px;overflow:hidden}
+.bar-fill{height:100%;border-radius:100px;background:var(--grad);transition:width 1s}
+.bar-num{font-family:var(--fm);font-size:10px;color:var(--muted);width:50px;text-align:right;flex-shrink:0}
 
-/* HOLOGRAM */
-.order-hologram{
-  display:none;position:absolute;
-  top:50%;left:calc(100% + 12px);transform:translateY(-50%);
-  width:280px;z-index:999;
-  background:rgba(7,7,16,0.97);
-  border:1px solid var(--cyan);border-radius:12px;
-  padding:16px;box-shadow:0 0 40px rgba(0,212,255,0.2),inset 0 0 20px rgba(0,212,255,0.03);
-}
-.order-hologram::before{
-  content:'';position:absolute;
-  left:-8px;top:50%;transform:translateY(-50%);
-  border:8px solid transparent;border-right-color:var(--cyan);
-  border-left:none;
-}
-.hologram-title{font-size:10px;letter-spacing:3px;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;font-family:var(--mono)}
-.holo-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px}
-.holo-label{color:var(--text3);font-family:var(--mono)}
-.holo-val{color:var(--text);font-weight:600;text-align:right;max-width:160px}
-.holo-divider{border:none;border-top:1px solid var(--border);margin:10px 0}
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;font-family:var(--fm);font-size:10px;font-weight:600;letter-spacing:.07em;padding:3px 10px;border-radius:100px}
+.b-new{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.3)}
+.b-accepted{background:rgba(255,184,0,.12);color:var(--yellow);border:1px solid rgba(255,184,0,.3)}
+.b-preparing{background:rgba(255,107,53,.12);color:var(--orange);border:1px solid rgba(255,107,53,.3)}
+.b-ready{background:rgba(0,255,136,.12);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+.b-picked{background:rgba(123,47,255,.12);color:#B080FF;border:1px solid rgba(123,47,255,.3)}
+.b-delivered{background:rgba(0,255,136,.08);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.b-cancelled{background:rgba(255,59,59,.12);color:var(--red);border:1px solid rgba(255,59,59,.3)}
 
-/* MENY */
-.meny-toolbar{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center}
-.btn-add{
-  padding:10px 20px;background:linear-gradient(135deg,var(--cyan),var(--violet));
-  border:none;border-radius:8px;color:#000;font-family:var(--font);
-  font-size:13px;font-weight:700;cursor:pointer;transition:.2s;
-}
-.btn-add:hover{opacity:.9;transform:translateY(-1px)}
-.btn-cat{
-  padding:10px 16px;background:transparent;
-  border:1px solid var(--border);border-radius:8px;
-  color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;transition:.2s;
-}
-.btn-cat:hover{border-color:var(--violet);color:var(--violet)}
-.filter-tabs{display:flex;gap:6px;flex-wrap:wrap}
-.filter-tab{
-  padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;
-  background:transparent;border:1px solid var(--border);color:var(--text2);transition:.2s;
-}
-.filter-tab.active{background:rgba(0,212,255,0.1);border-color:var(--cyan);color:var(--cyan)}
+/* ── NOTIF ── */
+.notif{position:fixed;top:66px;right:18px;z-index:300;background:var(--s1);border:1px solid rgba(0,212,255,.3);border-radius:13px;padding:13px 16px;display:flex;align-items:center;gap:10px;transform:translateX(340px);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:290px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.notif.show{transform:translateX(0)}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);flex-shrink:0;animation:pulse 1.5s infinite}
+.notif-body{flex:1}.notif-tag{font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:.1em;margin-bottom:2px}
+.notif-msg{font-size:12px;line-height:1.4}
 
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.menu-card{
-  background:var(--card);border:1px solid var(--border);border-radius:12px;
-  padding:16px;transition:.2s;
-}
-.menu-card:hover{border-color:rgba(0,212,255,0.3)}
-.menu-card.unavailable{opacity:.5}
-.menu-card-top{display:flex;justify-content:space-between;margin-bottom:10px}
-.menu-emoji{font-size:36px;line-height:1}
-.menu-toggle{
-  width:40px;height:22px;background:var(--bg3);border-radius:20px;
-  border:1px solid var(--border);cursor:pointer;position:relative;transition:.3s;
-}
-.menu-toggle.on{background:rgba(0,255,157,0.3);border-color:var(--green)}
-.menu-toggle::after{
-  content:'';position:absolute;top:3px;left:3px;
-  width:14px;height:14px;border-radius:50%;background:var(--text3);transition:.3s;
-}
-.menu-toggle.on::after{left:21px;background:var(--green)}
-.menu-card-name{font-size:16px;font-weight:700;margin-bottom:4px}
-.menu-card-desc{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.4}
-.allergen-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
-.allergen-tag{
-  padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;
-  font-family:var(--mono);
-}
-.allergen-tag.gluten{background:rgba(255,107,53,0.15);color:var(--orange)}
-.allergen-tag.laktos{background:rgba(255,215,0,0.15);color:var(--yellow)}
-.allergen-tag.notter{background:rgba(255,59,92,0.15);color:var(--red)}
-.allergen-tag.vegan{background:rgba(0,255,157,0.15);color:var(--green)}
-.allergen-tag.other{background:rgba(90,90,122,0.3);color:var(--text2)}
-.menu-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
-.menu-price{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--cyan)}
-.menu-cat-label{font-size:10px;color:var(--text3);font-family:var(--mono);letter-spacing:1px}
-.menu-edit-btn{
-  padding:5px 12px;background:transparent;border:1px solid var(--border);
-  border-radius:6px;color:var(--text2);font-size:11px;cursor:pointer;transition:.2s;
-}
-.menu-edit-btn:hover{border-color:var(--cyan);color:var(--cyan)}
-
-/* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{
-  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;
-}
-.stat-label{font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;font-family:var(--mono)}
-.stat-value{font-size:32px;font-weight:800;color:var(--text);margin-top:8px}
-.stat-value.cyan{color:var(--cyan)}
-.stat-value.green{color:var(--green)}
-.stat-value.orange{color:var(--orange)}
-.stat-delta{font-size:12px;margin-top:4px}
-.stat-delta.up{color:var(--green)}
-.stat-delta.down{color:var(--red)}
-
-/* HISTORIK */
-.historik-table{width:100%;border-collapse:separate;border-spacing:0}
-.historik-table th{
-  padding:12px 16px;text-align:left;font-size:10px;letter-spacing:2px;
-  color:var(--text3);text-transform:uppercase;font-family:var(--mono);
-  border-bottom:1px solid var(--border);
-}
-.historik-table td{
-  padding:14px 16px;border-bottom:1px solid rgba(255,255,255,0.03);
-  font-size:13px;color:var(--text2);
-}
-.historik-table tr:hover td{background:rgba(255,255,255,0.02)}
-.artiklar-cell{
-  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--cyan);
-  cursor:pointer;position:relative;
-}
-.artiklar-tooltip{
-  display:none;position:absolute;
-  bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
-  background:var(--card2);border:1px solid var(--border);border-radius:8px;
-  padding:10px 14px;min-width:200px;z-index:999;
-  font-size:12px;color:var(--text);
-  box-shadow:0 4px 20px rgba(0,0,0,0.5);
-  white-space:nowrap;
-}
-.artiklar-cell:hover .artiklar-tooltip{display:block}
-
-/* MODAL */
-.modal-bg{
-  display:none;position:fixed;inset:0;z-index:1000;
-  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
-  align-items:center;justify-content:center;
-}
-.modal-bg.open{display:flex}
-.modal{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:28px;width:480px;max-width:95vw;max-height:85vh;overflow-y:auto;
-  position:relative;
-}
-.modal-title{font-size:20px;font-weight:800;margin-bottom:20px}
-.modal-close{
-  position:absolute;top:16px;right:16px;background:transparent;
-  border:1px solid var(--border);border-radius:6px;
-  color:var(--text2);font-size:16px;cursor:pointer;width:30px;height:30px;
-  display:flex;align-items:center;justify-content:center;transition:.2s;
-}
-.modal-close:hover{border-color:var(--red);color:var(--red)}
-.modal-group{margin-bottom:16px}
-.modal-label{font-size:11px;letter-spacing:2px;color:var(--text2);margin-bottom:6px;display:block;text-transform:uppercase}
-.modal-input{
-  width:100%;padding:12px 14px;background:var(--bg3);
-  border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-family:var(--mono);font-size:13px;outline:none;transition:.2s;
-}
-.modal-input:focus{border-color:var(--cyan)}
-.modal-select{
-  width:100%;padding:12px 14px;background:var(--bg3);
-  border:1px solid var(--border);border-radius:8px;
-  color:var(--text);font-family:var(--font);font-size:13px;outline:none;
-  cursor:pointer;
-}
-.modal-textarea{min-height:80px;resize:vertical}
-.allergen-checkboxes{display:flex;flex-wrap:wrap;gap:8px}
-.allergen-check{
-  display:flex;align-items:center;gap:6px;
-  padding:6px 12px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:20px;cursor:pointer;font-size:12px;transition:.2s;
-}
-.allergen-check input{display:none}
-.allergen-check.checked{background:rgba(0,212,255,0.1);border-color:var(--cyan);color:var(--cyan)}
-.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-.btn-save{
-  padding:11px 24px;background:linear-gradient(135deg,var(--cyan),var(--violet));
-  border:none;border-radius:8px;color:#000;font-weight:700;font-size:13px;cursor:pointer;
-}
-.btn-cancel{
-  padding:11px 24px;background:transparent;border:1px solid var(--border);
-  border-radius:8px;color:var(--text2);font-size:13px;cursor:pointer;transition:.2s;
-}
-.btn-cancel:hover{border-color:var(--red);color:var(--red)}
-.btn-delete{
-  padding:11px 20px;background:rgba(255,59,92,0.1);border:1px solid rgba(255,59,92,0.3);
-  border-radius:8px;color:var(--red);font-size:13px;cursor:pointer;transition:.2s;
-}
-.btn-delete:hover{background:var(--red);color:#fff}
-
-/* CHAT DRAWER */
-.chat-drawer{
-  position:fixed;right:-420px;top:0;bottom:0;width:400px;
-  background:var(--bg2);border-left:1px solid var(--border);
-  z-index:500;transition:.3s;display:flex;flex-direction:column;
-}
-.chat-drawer.open{right:0;box-shadow:-10px 0 40px rgba(0,0,0,0.5)}
-.chat-header{padding:20px;border-bottom:1px solid var(--border)}
-.chat-order-id{font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:2px}
-.chat-title{font-size:18px;font-weight:800;margin-top:4px}
-.chat-close{
-  position:absolute;top:16px;right:16px;background:transparent;
-  border:1px solid var(--border);border-radius:6px;
-  color:var(--text2);font-size:18px;cursor:pointer;width:32px;height:32px;
-  display:flex;align-items:center;justify-content:center;
-}
-.channel-tabs{display:flex;gap:6px;padding:12px 20px;border-bottom:1px solid var(--border)}
-.ch-tab{
-  flex:1;padding:8px;border-radius:8px;text-align:center;
-  font-size:11px;font-weight:600;cursor:pointer;transition:.2s;
-  background:var(--bg3);border:1px solid var(--border);color:var(--text2);
-}
-.ch-tab.active{background:rgba(0,212,255,0.1);border-color:var(--cyan);color:var(--cyan)}
-.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
-.chat-msg{padding:10px 14px;border-radius:10px;max-width:85%;font-size:13px;line-height:1.4}
-.chat-msg.me{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);align-self:flex-end}
-.chat-msg.other{background:var(--card2);border:1px solid var(--border);align-self:flex-start}
-.msg-sender{font-size:10px;color:var(--text3);margin-bottom:3px;font-family:var(--mono)}
-.msg-time{font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--mono);text-align:right}
-.chat-input-row{padding:16px;border-top:1px solid var(--border);display:flex;gap:8px}
-.chat-input{
-  flex:1;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);
-  border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;outline:none;
-}
-.chat-input:focus{border-color:var(--cyan)}
-.chat-send{
-  padding:10px 16px;background:var(--cyan);border:none;border-radius:8px;
-  color:#000;font-weight:700;font-size:13px;cursor:pointer;
-}
-
-/* PROFIL */
-.profil-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.profil-section{
-  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;
-}
-.profil-section-title{font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:16px;
-  font-family:var(--mono);letter-spacing:1px;text-transform:uppercase}
-.profil-section.full{grid-column:1/-1}
-
-/* CAT MANAGER */
-.cat-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-.cat-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;
-}
-.cat-name{flex:1;font-size:14px;color:var(--text)}
-.cat-count{font-family:var(--mono);font-size:11px;color:var(--text3)}
-.btn-cat-rename{padding:5px 10px;background:transparent;border:1px solid var(--border);border-radius:5px;color:var(--text2);font-size:11px;cursor:pointer}
-.btn-cat-del{padding:5px 10px;background:transparent;border:1px solid rgba(255,59,92,0.3);border-radius:5px;color:var(--red);font-size:11px;cursor:pointer}
+/* ── AUTH ── */
+.auth-wall{position:fixed;inset:0;background:var(--bg);z-index:400;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-box{background:var(--s1);border:1px solid var(--border);border-radius:20px;width:100%;max-width:420px;padding:32px}
+.auth-logo{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:5px}
+.auth-title{font-family:var(--fd);font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:22px;line-height:1.6}
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.afield label{font-family:var(--fm);font-size:10px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;display:block;margin-bottom:5px}
+.ainput{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;transition:border-color .2s}
+.ainput:focus{border-color:rgba(0,212,255,.4)}.ainput::placeholder{color:var(--muted)}
+.aprimary{background:var(--grad);color:var(--bg);font-family:var(--fm);font-weight:600;font-size:13px;letter-spacing:.06em;padding:13px;border-radius:9px;border:none;cursor:pointer;transition:opacity .2s;width:100%}
+.aprimary:hover{opacity:.85}.aprimary:disabled{opacity:.4;cursor:not-allowed}
+.aerr{background:rgba(255,59,59,.1);border:1px solid rgba(255,59,59,.25);border-radius:8px;padding:9px 13px;font-size:12px;color:var(--red);display:none;margin-bottom:4px}
+.aerr.show{display:block}
+.auth-skip{font-family:var(--fm);font-size:10px;color:var(--muted);text-align:center;margin-top:14px;cursor:pointer;letter-spacing:.06em}
+.auth-skip:hover{color:var(--cyan)}
 
 /* TOAST */
-.toast{
-  position:fixed;bottom:24px;right:24px;z-index:9999;
-  padding:14px 20px;background:var(--card2);border:1px solid var(--green);
-  border-radius:10px;color:var(--text);font-size:14px;font-weight:600;
-  box-shadow:0 4px 20px rgba(0,0,0,0.4);
-  animation:toastIn .3s ease;
-}
-@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;background:var(--s1);border:1px solid rgba(0,255,136,.3);border-radius:9px;padding:11px 18px;display:flex;align-items:center;gap:9px;font-size:13px;font-family:var(--fm);transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:310px}
+.toast.show{transform:translateY(0);opacity:1}.toast-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0}
+.toast--err{border-color:rgba(255,59,59,.3)}.toast--err .toast-dot{background:var(--red);box-shadow:0 0 8px var(--red)}
+.toast--info{border-color:rgba(0,212,255,.3)}.toast--info .toast-dot{background:var(--cyan);box-shadow:0 0 8px var(--cyan)}
 
-.empty-state{
-  text-align:center;padding:40px 20px;
-  color:var(--text3);font-family:var(--mono);font-size:13px;
-}
-.empty-icon{font-size:40px;margin-bottom:12px}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:var(--cyan)}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+@media(max-width:700px){.sidebar{display:none}.main{margin-left:0}.stats-row{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="brand">Abkär-SE · Atlas Valley</div>
-      <h1>Atlas <span class="accent">Delivery</span></h1>
-      <div class="role-badge">🍽️ RESTAURANG</div>
+<!-- AUTH WALL -->
+<div class="auth-wall" id="authWall">
+  <div class="auth-box">
+    <div class="auth-logo">Atlas Delivery</div>
+    <div class="auth-title">Restaurant Panel</div>
+    <div class="auth-sub">Logga in med ditt restaurangkonto för att hantera beställningar och meny i realtid.</div>
+    <div class="aerr" id="aerr"></div>
+    <div class="auth-form">
+      <div class="afield"><label>E-post</label><input class="ainput" id="aEmail" type="email" placeholder="restaurang@atlasdel.se"></div>
+      <div class="afield"><label>Lösenord</label><input class="ainput" id="aPwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+      <button class="aprimary" id="loginBtn" onclick="doLogin()">LOGGA IN</button>
     </div>
-    <div class="form-group">
-      <label>E-post</label>
-      <input type="email" id="loginEmail" placeholder="restaurant@atlasdel.se">
-    </div>
-    <div class="form-group">
-      <label>Lösenord</label>
-      <input type="password" id="loginPass" placeholder="••••••••">
-    </div>
-    <button class="btn-login" onclick="doLogin()">Logga in</button>
-    <div class="login-err" id="loginErr"></div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="appShell">
-  <nav class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-brand">Atlas Delivery</div>
-      <div class="sidebar-name" id="sidebarName">Restaurang<span class="dot">.</span></div>
-      <div class="status-toggle" onclick="toggleStatus()" id="statusToggle">
-        <div class="status-dot" id="statusDot"></div>
-        <span class="status-label" id="statusLabel">Stängd</span>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-tag">Atlas Delivery</div>
+    <div class="sb-logo-main">Restaurang</div>
+  </div>
+  <div class="sb-rest">
+    <div class="sb-rest-row">
+      <div class="od" id="restDot"></div>
+      <div>
+        <div class="sb-rest-name" id="sbName">—</div>
+        <div class="sb-rest-status" id="sbStatus">—</div>
       </div>
     </div>
-    <div class="sidebar-nav">
-      <div class="nav-item active" onclick="goTo('orders')" id="nav-orders">
-        <span class="nav-icon">📋</span> Ordrar
-        <span class="nav-badge" id="newBadge" style="display:none">0</span>
-      </div>
-      <div class="nav-item" onclick="goTo('meny')" id="nav-meny">
-        <span class="nav-icon">🍴</span> Meny
-      </div>
-      <div class="nav-item" onclick="goTo('historik')" id="nav-historik">
-        <span class="nav-icon">📊</span> Historik
-      </div>
-      <div class="nav-item" onclick="goTo('statistik')" id="nav-statistik">
-        <span class="nav-icon">📈</span> Statistik
-      </div>
-      <div class="nav-item" onclick="goTo('profil')" id="nav-profil">
-        <span class="nav-icon">🏪</span> Profil
-      </div>
+    <div class="sb-sel" style="display:none">
+      <select id="restSel"></select>
     </div>
-    <div class="sidebar-footer">
-      <button class="logout-btn" onclick="doLogout()">Logga ut</button>
-    </div>
+  </div>
+  <nav class="sb-nav">
+    <button class="sb-item active" onclick="setPage('orders',this)"><span class="sb-icon">📋</span>Beställningar<span class="sb-badge" id="newBadge" style="display:none">0</span></button>
+    <button class="sb-item" onclick="setPage('menu',this)"><span class="sb-icon">🍽️</span>Meny</button>
+    <button class="sb-item" onclick="setPage('stats',this)"><span class="sb-icon">📊</span>Statistik</button>
   </nav>
-
-  <main class="main" id="mainContent"></main>
-</div>
-
-<!-- CHAT DRAWER -->
-<div class="chat-drawer" id="chatDrawer">
-  <div class="chat-header">
-    <button class="chat-close" onclick="closeChat()">✕</button>
-    <div class="chat-order-id" id="chatOrderId">ORD-XXXX</div>
-    <div class="chat-title">Konversation</div>
+  <div class="sb-bottom">
+    <div class="toggle-row">
+      <span>Restaurang öppen</span>
+      <button class="pill on" id="openPill" onclick="toggleOpen()"></button>
+    </div>
   </div>
-  <div class="channel-tabs">
-    <div class="ch-tab active" onclick="switchChannel('customer')" id="cht-customer">👤 Kund</div>
-    <div class="ch-tab" onclick="switchChannel('rider')" id="cht-rider">🛵 Bud</div>
-    <div class="ch-tab" onclick="switchChannel('dev')" id="cht-dev">⚡ Support</div>
-  </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input-row">
-    <input class="chat-input" id="chatInput" placeholder="Skriv ett meddelande..." onkeydown="if(event.key==='Enter')sendMsg()">
-    <button class="chat-send" onclick="sendMsg()">Skicka</button>
-  </div>
-</div>
+</aside>
 
-<!-- ITEM MODAL -->
-<div class="modal-bg" id="itemModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeItemModal()">✕</button>
-    <div class="modal-title" id="itemModalTitle">Ny rätt</div>
-    <div class="modal-group">
-      <label class="modal-label">Namn</label>
-      <input class="modal-input" id="iName" placeholder="Ex: Klassisk Burger">
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="tb-title" id="pageTitle">Beställningar</div>
+    <div class="tb-right">
+      <div class="sync-chip"><div class="od on" id="syncDot"></div><span id="syncTxt">ANSLUTER...</span></div>
+      <div class="clock" id="clock">--:--:--</div>
+      <button class="sim-btn" onclick="simulateOrder()">+ Testa beställning</button>
     </div>
-    <div class="modal-group">
-      <label class="modal-label">Beskrivning</label>
-      <textarea class="modal-input modal-textarea" id="iDesc" placeholder="Kort beskrivning..."></textarea>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="modal-group">
-        <label class="modal-label">Pris (kr)</label>
-        <input class="modal-input" id="iPrice" type="number" placeholder="149">
-      </div>
-      <div class="modal-group">
-        <label class="modal-label">Emoji / Bild</label>
-        <input class="modal-input" id="iEmoji" placeholder="🍔">
-      </div>
-    </div>
-    <div class="modal-group">
-      <label class="modal-label">Kategori</label>
-      <select class="modal-select" id="iCat"></select>
-    </div>
-    <div class="modal-group">
-      <label class="modal-label">Allergener</label>
-      <div class="allergen-checkboxes" id="allergenBoxes">
-        <label class="allergen-check" onclick="toggleAllergen(this)"><input type="checkbox" value="Gluten"> Gluten</label>
-        <label class="allergen-check" onclick="toggleAllergen(this)"><input type="checkbox" value="Laktos"> Laktos</label>
-        <label class="allergen-check" onclick="toggleAllergen(this)"><input type="checkbox" value="Nötter"> Nötter</label>
-        <label class="allergen-check" onclick="toggleAllergen(this)"><input type="checkbox" value="Ägg"> Ägg</label>
-        <label class="allergen-check" onclick="toggleAllergen(this)"><input type="checkbox" value="Soja"> Soja</label>
-        <label class="allergen-check" onclick="toggleAllergen(this)"><input type="checkbox" value="Vegan"> Vegan</label>
-        <label class="allergen-check" onclick="toggleAllergen(this)"><input type="checkbox" value="Vegetarisk"> Vegetarisk</label>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-delete" id="iDeleteBtn" onclick="deleteItem()" style="display:none">Ta bort</button>
-      <button class="btn-cancel" onclick="closeItemModal()">Avbryt</button>
-      <button class="btn-save" onclick="saveItem()">Spara</button>
-    </div>
+  </div>
+  <div class="content" id="content">
+    <div style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--muted);gap:10px;font-family:var(--fm);font-size:12px"><div style="width:20px;height:20px;border:2px solid rgba(0,212,255,.2);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite"></div>LADDAR...</div>
   </div>
 </div>
 
-<!-- CATEGORY MODAL -->
-<div class="modal-bg" id="catModal">
-  <div class="modal">
-    <button class="modal-close" onclick="document.getElementById('catModal').classList.remove('open')">✕</button>
-    <div class="modal-title">Hantera kategorier</div>
-    <div class="cat-list" id="catList"></div>
-    <div style="display:flex;gap:10px">
-      <input class="modal-input" id="newCatInput" placeholder="Ny kategori..." style="flex:1">
-      <button class="btn-save" onclick="addCategory()" style="padding:10px 16px">Lägg till</button>
-    </div>
+<!-- NOTIF -->
+<div class="notif" id="notif">
+  <div class="notif-dot"></div>
+  <div class="notif-body">
+    <div class="notif-tag" id="notifTag">MEDDELANDE</div>
+    <div class="notif-msg" id="notifMsg">—</div>
   </div>
 </div>
 
+<!-- TOAST -->
+<div class="toast" id="toast"><div class="toast-dot"></div><span id="toastMsg">—</span></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const SB_URL = 'https://vgtdswplzuhbhhlmxrgg.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndGRzd3BsenVoYmhobG14cmdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTY2ODIsImV4cCI6MjA4ODU5MjY4Mn0.82sk-40cQo7NxeRWUgthTzp_fk1TlBcqPchrBGGIFnU';
-const { createClient } = supabase;
-const SB = createClient(SB_URL, SB_KEY);
+const SB = supabase.createClient(
+  'https://vgtdswplzuhbhhlmxrgg.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZndGRzd3BsenVoYmhobG14cmdnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMwMTY2ODIsImV4cCI6MjA4ODU5MjY4Mn0.82sk-40cQo7NxeRWUgthTzp_fk1TlBcqPchrBGGIFnU'
+);
 
-let RESTAURANT = null;
-let ORDERS = [];
-let MENU = [];
-let CATS = [];
-let currentPage = 'orders';
-let chatOrderId = null;
-let chatChannel = 'customer';
-let editingItemId = null;
-let chatSub = null;
-let orderSub = null;
-let isOpen = false;
+// ── State ─────────────────────────────────────────────────────
+let page      = 'orders';
+let activeRestId = null;
+let restaurants  = [];
+let orders       = [];
+let selectedOId  = null;
 
-// ─── AUTH ───────────────────────────────────────────────
-async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPass').value.trim();
-  const err = document.getElementById('loginErr');
-  err.style.display = 'none';
+// ── Clock ─────────────────────────────────────────────────────
+setInterval(()=>{
+  const n=new Date();
+  document.getElementById('clock').textContent=
+    [n.getHours(),n.getMinutes(),n.getSeconds()].map(x=>x.toString().padStart(2,'0')).join(':');
+},1000);
 
-  if (!email || !pass) { showErr('Fyll i alla fält'); return; }
-
-  const { data, error } = await SB.auth.signInWithPassword({ email, password: pass });
-  if (error) { showErr('Fel e-post eller lösenord'); return; }
-
-  // Try to find associated restaurant
-  // Strategy 1: match by auth_user_id
-  let { data: rest } = await SB.from('restaurants')
-    .select('*').eq('auth_user_id', data.user.id).single();
-  
-  // Strategy 2: match by email column
-  if (!rest) {
-    const { data: rest2 } = await SB.from('restaurants')
-      .select('*').eq('email', email).single();
-    rest = rest2;
-  }
-
-  // Strategy 3: match by profile role + assign first unassigned restaurant
-  if (!rest) {
-    const { data: profile } = await SB.from('profiles')
-      .select('*').eq('id', data.user.id).single();
-    
-    if (profile && profile.role === 'restaurant') {
-      // Find first unassigned restaurant
-      const { data: unassigned } = await SB.from('restaurants')
-        .select('*').is('auth_user_id', null).limit(1).single();
-      
-      if (unassigned) {
-        // Assign this user to this restaurant
-        await SB.from('restaurants')
-          .update({ auth_user_id: data.user.id, email: email })
-          .eq('id', unassigned.id);
-        rest = unassigned;
-      }
-    }
-  }
-
-  if (!rest) {
-    showErr('Ingen restaurang kopplad till detta konto. Kontakta admin.');
-    await SB.auth.signOut();
-    return;
-  }
-
-  RESTAURANT = rest;
-  await loadApp();
+// ── AUTH ──────────────────────────────────────────────────────
+async function doLogin(){
+  const email=document.getElementById('aEmail').value.trim();
+  const pwd=document.getElementById('aPwd').value;
+  const btn=document.getElementById('loginBtn');
+  const err=document.getElementById('aerr');
+  btn.disabled=true; btn.textContent='LOGGAR IN...';
+  err.className='aerr';
+  const{error}=await SB.auth.signInWithPassword({email,password:pwd});
+  if(error){err.textContent=error.message;err.className='aerr show';btn.disabled=false;btn.textContent='LOGGA IN';return}
+  document.getElementById('authWall').style.display='none';
+  await loadAll();
 }
 
-function showErr(msg) {
-  const e = document.getElementById('loginErr');
-  e.style.display = 'block';
-  e.textContent = msg;
-}
 
-async function doLogout() {
-  await SB.auth.signOut();
-  location.reload();
-}
+// ── LOAD ──────────────────────────────────────────────────────
+async function loadAll(){
+  // Find which restaurant belongs to the logged-in email
+  const{data:{session}}=await SB.auth.getSession();
+  const userEmail=session?.user?.email||'';
 
-async function loadApp() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appShell').style.display = 'flex';
-  document.getElementById('sidebarName').innerHTML = RESTAURANT.name + '<span class="dot">.</span>';
-  
-  await loadMenu();
-  await loadCats();
-  subscribeOrders();
-  renderPage('orders');
-}
+  const{data,error}=await SB.from('restaurants').select('*,menu_items(*)').order('name');
+  if(error){toast('Fel vid laddning: '+error.message,'err');return}
+  restaurants=data||[];
 
-// ─── DATA ───────────────────────────────────────────────
-async function loadMenu() {
-  const { data } = await SB.from('menu_items')
-    .select('*').eq('restaurant_id', RESTAURANT.id).order('sort_order');
-  MENU = data || [];
-}
+  // Try to find restaurant by email or auth_user_id
+  const userId=session?.user?.id||'';
+  const assigned=restaurants.find(r=>r.email===userEmail||r.auth_user_id===userId);
+  // Fallback: first restaurant (for admin/test accounts)
+  activeRestId=(assigned||restaurants[0])?.id||null;
 
-async function loadCats() {
-  // Try from menu_categories table first
-  const { data } = await SB.from('menu_categories')
-    .select('*').eq('restaurant_id', RESTAURANT.id).order('sort_order');
-  
-  if (data && data.length > 0) {
-    CATS = data.map(c => c.name);
-  } else {
-    // Fall back to categories in menu items
-    const cats = [...new Set(MENU.map(i => i.category).filter(Boolean))];
-    CATS = cats.length > 0 ? cats : ['Förrätter', 'Huvudrätter', 'Desserter', 'Drycker'];
-  }
-}
+  const sel=document.getElementById('restSel');
+  sel.innerHTML=restaurants.map(r=>`<option value="${r.id}">${r.name}</option>`).join('');
+  if(activeRestId) await switchRest(activeRestId,true);
 
-function subscribeOrders() {
-  if (orderSub) SB.removeChannel(orderSub);
-  
-  orderSub = SB.channel('restaurant-orders-' + RESTAURANT.id)
-    .on('postgres_changes', {
-      event: '*', schema: 'public', table: 'orders',
-      filter: `restaurant_id=eq.${RESTAURANT.id}`
-    }, async () => {
-      await loadOrders();
-      if (currentPage === 'orders') renderOrdersPage();
-    }).subscribe();
-  
-  loadOrders().then(() => { if (currentPage === 'orders') renderOrdersPage(); });
-}
-
-async function loadOrders() {
-  const { data } = await SB.from('orders')
-    .select('*').eq('restaurant_id', RESTAURANT.id)
-    .in('status', ['pending', 'paid', 'accepted', 'ready', 'picked'])
-    .order('created_at', { ascending: false });
-  ORDERS = data || [];
-  updateNewBadge();
-}
-
-function updateNewBadge() {
-  const newCount = ORDERS.filter(o => o.status === 'pending' || o.status === 'paid').length;
-  const b = document.getElementById('newBadge');
-  if (newCount > 0) { b.style.display = 'inline'; b.textContent = newCount; }
-  else b.style.display = 'none';
-}
-
-// ─── NAV ────────────────────────────────────────────────
-function goTo(page) {
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('nav-' + page)?.classList.add('active');
-  currentPage = page;
-  renderPage(page);
-}
-
-function renderPage(page) {
-  const m = document.getElementById('mainContent');
-  if (page === 'orders') renderOrdersPage();
-  else if (page === 'meny') renderMenyPage();
-  else if (page === 'historik') renderHistorikPage();
-  else if (page === 'statistik') renderStatistikPage();
-  else if (page === 'profil') renderProfilPage();
-}
-
-// ─── ORDERS PAGE ────────────────────────────────────────
-function renderOrdersPage() {
-  const cols = {
-    nya: ORDERS.filter(o => o.status === 'pending' || o.status === 'paid'),
-    tillagas: ORDERS.filter(o => o.status === 'accepted'),
-    klar: ORDERS.filter(o => o.status === 'ready'),
-    hamtad: ORDERS.filter(o => o.status === 'picked')
-  };
-
-  document.getElementById('mainContent').innerHTML = `
-    <div class="page-header">
-      <div class="page-title">Ordrar</div>
-      <div class="page-sub">${RESTAURANT.name} · Live</div>
-    </div>
-    <div class="kanban">
-      <div class="col-nya">
-        <div class="col-header">📥 Nya <span>${cols.nya.length}</span></div>
-        <div class="col-body">${cols.nya.map(o => orderCard(o)).join('') || empty('Inga nya ordrar')}</div>
-      </div>
-      <div class="col-tillagas">
-        <div class="col-header">👨‍🍳 Tillagas <span>${cols.tillagas.length}</span></div>
-        <div class="col-body">${cols.tillagas.map(o => orderCard(o)).join('') || empty('Ingenting under tillagning')}</div>
-      </div>
-      <div class="col-klar">
-        <div class="col-header">✅ Klar <span>${cols.klar.length}</span></div>
-        <div class="col-body">${cols.klar.map(o => orderCard(o)).join('') || empty('Inga klara ordrar')}</div>
-      </div>
-      <div class="col-hamtad">
-        <div class="col-header">🛵 Hämtad <span>${cols.hamtad.length}</span></div>
-        <div class="col-body">${cols.hamtad.map(o => orderCard(o)).join('') || empty('Inga upphämtade')}</div>
-      </div>
-    </div>`;
-}
-
-function empty(txt) {
-  return `<div class="empty-state"><div class="empty-icon">○</div>${txt}</div>`;
-}
-
-function orderCard(o) {
-  const items = Array.isArray(o.items) ? o.items : (JSON.parse(o.items || '[]'));
-  const itemsText = items.map(i => `${i.quantity||1}× ${i.name}`).join(', ');
-  const t = new Date(o.created_at);
-  const timeStr = t.toLocaleTimeString('sv-SE', {hour:'2-digit',minute:'2-digit'});
-  
-  let actions = '';
-  if (o.status === 'pending' || o.status === 'paid') {
-    actions = `<button class="btn-action btn-accept" onclick="updateOrder('${o.id}','accepted')">Acceptera</button>`;
-  } else if (o.status === 'accepted') {
-    actions = `<button class="btn-action btn-ready" onclick="updateOrder('${o.id}','ready')">Klar</button>`;
-  }
-  actions += `<button class="btn-action btn-chat" onclick="openChat('${o.id}')">💬</button>`;
-
-  const phone = o.customer_phone || o.phone || '–';
-  const address = o.delivery_address || o.address || '–';
-  const total = o.total_amount || o.total || 0;
-  const fee = o.delivery_fee || 0;
-  const tip = o.tip || 0;
-  const food = total - fee - tip;
-
-  return `
-    <div class="order-card">
-      <div class="order-top">
-        <span class="order-id">${o.id?.slice(0,8) || 'ORD'}</span>
-        <span class="order-time">${timeStr}</span>
-      </div>
-      <div class="order-name">${o.customer_name || 'Kund'}</div>
-      <div class="order-items">${itemsText}</div>
-      <div class="order-footer">
-        <span class="order-total">${total} kr</span>
-        <div class="order-actions">${actions}</div>
-      </div>
-      <div class="order-hologram">
-        <div class="hologram-title">⬡ Orderdetaljer</div>
-        <div class="holo-row"><span class="holo-label">ID</span><span class="holo-val">${o.id?.slice(0,12)}</span></div>
-        <div class="holo-row"><span class="holo-label">Tid</span><span class="holo-val">${timeStr}</span></div>
-        <hr class="holo-divider">
-        <div class="holo-row"><span class="holo-label">Kund</span><span class="holo-val">${o.customer_name || '–'}</span></div>
-        <div class="holo-row"><span class="holo-label">Tel</span><span class="holo-val">${phone}</span></div>
-        <div class="holo-row"><span class="holo-label">Adress</span><span class="holo-val">${address}</span></div>
-        <hr class="holo-divider">
-        <div class="holo-row"><span class="holo-label">Mat</span><span class="holo-val">${food.toFixed(0)} kr</span></div>
-        <div class="holo-row"><span class="holo-label">Leverans</span><span class="holo-val">${fee} kr</span></div>
-        <div class="holo-row"><span class="holo-label">Dricks</span><span class="holo-val">${tip} kr</span></div>
-        <div class="holo-row"><span class="holo-label">Totalt</span><span class="holo-val">${total} kr</span></div>
-        <hr class="holo-divider">
-        <div class="holo-row"><span class="holo-label">Artiklar</span><span class="holo-val">${itemsText}</span></div>
-      </div>
-    </div>`;
-}
-
-async function updateOrder(id, status) {
-  const { error } = await SB.from('orders').update({ status }).eq('id', id);
-  if (error) { toast('❌ ' + error.message); return; }
-  toast('✅ Order uppdaterad → ' + status);
-  await loadOrders();
-  renderOrdersPage();
-}
-
-// ─── MENY PAGE ──────────────────────────────────────────
-let activeFilter = 'all';
-
-function renderMenyPage() {
-  const cats = ['all', ...CATS];
-  const filtered = activeFilter === 'all' ? MENU : MENU.filter(i => i.category === activeFilter);
-
-  document.getElementById('mainContent').innerHTML = `
-    <div class="page-header">
-      <div class="page-title">Meny</div>
-      <div class="page-sub">${MENU.length} rätter · ${CATS.length} kategorier</div>
-    </div>
-    <div class="meny-toolbar">
-      <button class="btn-add" onclick="openItemModal()">+ Ny rätt</button>
-      <button class="btn-cat" onclick="openCatModal()">⚙ Kategorier</button>
-      <div class="filter-tabs">
-        ${cats.map(c => `
-          <div class="filter-tab ${activeFilter===c?'active':''}" onclick="setFilter('${c}')">
-            ${c === 'all' ? 'Alla' : c}
-          </div>`).join('')}
-      </div>
-    </div>
-    <div class="menu-grid">
-      ${filtered.map(item => menuCard(item)).join('')}
-      ${filtered.length === 0 ? `<div class="empty-state"><div class="empty-icon">🍽️</div>Inga rätter i denna kategori</div>` : ''}
-    </div>`;
-}
-
-function menuCard(item) {
-  const allergens = item.allergens || [];
-  const allergenHtml = allergens.map(a => {
-    const cls = a.toLowerCase().includes('gluten') ? 'gluten' :
-                a.toLowerCase().includes('lakt') ? 'laktos' :
-                a.toLowerCase().includes('nöt') ? 'notter' :
-                a.toLowerCase().includes('vegan') ? 'vegan' : 'other';
-    return `<span class="allergen-tag ${cls}">${a}</span>`;
-  }).join('');
-
-  return `
-    <div class="menu-card ${item.available===false?'unavailable':''}">
-      <div class="menu-card-top">
-        <span class="menu-emoji">${item.emoji || item.image_url || '🍽️'}</span>
-        <div class="menu-toggle ${item.available!==false?'on':''}" onclick="toggleAvailability('${item.id}',${item.available!==false})"></div>
-      </div>
-      <div class="menu-card-name">${item.name}</div>
-      <div class="menu-card-desc">${item.description || ''}</div>
-      ${allergenHtml ? `<div class="allergen-tags">${allergenHtml}</div>` : ''}
-      <div class="menu-card-footer">
-        <span class="menu-price">${item.price} kr</span>
-        <span class="menu-cat-label">${item.category || 'Övrigt'}</span>
-      </div>
-      <button class="menu-edit-btn" onclick="openItemModal('${item.id}')">✏️ Redigera</button>
-    </div>`;
-}
-
-function setFilter(cat) {
-  activeFilter = cat;
-  renderMenyPage();
-}
-
-async function toggleAvailability(id, currentState) {
-  await SB.from('menu_items').update({ available: !currentState }).eq('id', id);
-  await loadMenu();
-  renderMenyPage();
-}
-
-// ─── ITEM MODAL ─────────────────────────────────────────
-function openItemModal(itemId) {
-  editingItemId = itemId || null;
-  const modal = document.getElementById('itemModal');
-  const title = document.getElementById('itemModalTitle');
-  const delBtn = document.getElementById('iDeleteBtn');
-
-  // Populate category select
-  const catSelect = document.getElementById('iCat');
-  catSelect.innerHTML = CATS.map(c => `<option value="${c}">${c}</option>`).join('');
-
-  // Reset allergens
-  document.querySelectorAll('.allergen-check').forEach(l => {
-    l.classList.remove('checked');
-    l.querySelector('input').checked = false;
-  });
-
-  if (itemId) {
-    const item = MENU.find(i => String(i.id) === String(itemId));
-    if (!item) return;
-    title.textContent = 'Redigera rätt';
-    delBtn.style.display = 'inline-block';
-    document.getElementById('iName').value = item.name || '';
-    document.getElementById('iDesc').value = item.description || '';
-    document.getElementById('iPrice').value = item.price || '';
-    document.getElementById('iEmoji').value = item.emoji || item.image_url || '';
-    catSelect.value = item.category || CATS[0] || '';
-    
-    const allergens = item.allergens || [];
-    document.querySelectorAll('.allergen-check').forEach(l => {
-      if (allergens.includes(l.querySelector('input').value)) {
-        l.classList.add('checked');
-        l.querySelector('input').checked = true;
-      }
+  // Realtime
+  SB.channel('rest-realtime')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'orders'},p=>{
+      if(p.new.restaurant_id!==activeRestId)return;
+      orders.unshift(p.new);
+      onNewOrder(p.new);
+      render();
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'orders'},p=>{
+      if(p.new.restaurant_id!==activeRestId)return;
+      orders=orders.map(o=>o.id===p.new.id?p.new:o);
+      if(selectedOId===p.new.id) renderDetail(p.new);
+      render();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'restaurants'},async()=>{
+      await reloadRestaurants();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'menu_items'},async()=>{
+      await reloadRestaurants();
+    })
+    .subscribe(s=>{
+      const ok=s==='SUBSCRIBED';
+      document.getElementById('syncDot').className='od '+(ok?'on':'off');
+      document.getElementById('syncTxt').textContent=ok?'LIVE — SUPABASE':'ANSLUTER...';
     });
-  } else {
-    title.textContent = 'Ny rätt';
-    delBtn.style.display = 'none';
-    document.getElementById('iName').value = '';
-    document.getElementById('iDesc').value = '';
-    document.getElementById('iPrice').value = '';
-    document.getElementById('iEmoji').value = '';
+}
+
+async function reloadRestaurants(){
+  const{data}=await SB.from('restaurants').select('*,menu_items(*)').order('name');
+  if(data){
+    restaurants=data;
+    const r=restaurants.find(x=>x.id===activeRestId);
+    if(r) updateSidebar(r);
+    if(page==='menu') render();
   }
-
-  modal.classList.add('open');
 }
 
-function closeItemModal() {
-  document.getElementById('itemModal').classList.remove('open');
-  editingItemId = null;
+async function switchRest(id, initial=false){
+  activeRestId=id;
+  if(!initial) document.getElementById('restSel').value=id;
+  const{data,error}=await SB.from('orders').select('*').eq('restaurant_id',id).order('created_at',{ascending:false}).limit(80);
+  if(!error) orders=data||[];
+  const r=restaurants.find(x=>x.id===id);
+  if(r) updateSidebar(r);
+  selectedOId=null;
+  render();
 }
 
-function toggleAllergen(el) {
-  el.classList.toggle('checked');
-  el.querySelector('input').checked = el.classList.contains('checked');
+function updateSidebar(r){
+  document.getElementById('sbName').textContent=r.name;
+  document.getElementById('sbStatus').textContent=r.is_open?'ÖPPEN':'STÄNGD';
+  document.getElementById('sbStatus').style.color=r.is_open?'var(--green)':'var(--muted)';
+  document.getElementById('restDot').className='od '+(r.is_open?'on':'off');
+  document.getElementById('openPill').className='pill '+(r.is_open?'on':'off');
 }
 
-async function saveItem() {
-  const name = document.getElementById('iName').value.trim();
-  const desc = document.getElementById('iDesc').value.trim();
-  const price = parseFloat(document.getElementById('iPrice').value);
-  const emoji = document.getElementById('iEmoji').value.trim();
-  const cat = document.getElementById('iCat').value;
-  const allergens = [...document.querySelectorAll('.allergen-check.checked')]
-    .map(l => l.querySelector('input').value);
-
-  if (!name || !price) { toast('❌ Namn och pris krävs'); return; }
-
-  const payload = {
-    name, description: desc, price,
-    emoji: emoji || '🍽️', image_url: emoji || null,
-    category: cat, allergens,
-    available: true,
-    restaurant_id: RESTAURANT.id
-  };
-
-  if (editingItemId) {
-    const { error } = await SB.from('menu_items').update(payload).eq('id', editingItemId);
-    if (error) { toast('❌ ' + error.message); return; }
-  } else {
-    const { error } = await SB.from('menu_items').insert(payload);
-    if (error) { toast('❌ ' + error.message); return; }
-  }
-
-  toast('✅ Rätt sparad');
-  closeItemModal();
-  await loadMenu();
-  renderMenyPage();
+// ── TOGGLE OPEN ───────────────────────────────────────────────
+async function toggleOpen(){
+  const r=restaurants.find(x=>x.id===activeRestId);
+  if(!r)return;
+  const{error}=await SB.from('restaurants').update({is_open:!r.is_open}).eq('id',activeRestId);
+  if(error){toast(error.message,'err');return}
+  notify('STATUS',!r.is_open?'Restaurangen är nu öppen!':'Restaurangen är nu stängd.');
 }
 
-async function deleteItem() {
-  if (!confirm('Ta bort denna rätt?')) return;
-  const { error } = await SB.from('menu_items').delete().eq('id', editingItemId);
-  if (error) { toast('❌ ' + error.message); return; }
-  toast('🗑️ Rätt borttagen');
-  closeItemModal();
-  await loadMenu();
-  renderMenyPage();
+// ── PAGES ─────────────────────────────────────────────────────
+const pageTitles={orders:'Beställningar',menu:'Meny',stats:'Statistik'};
+function setPage(p,el){
+  page=p;
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('pageTitle').textContent=pageTitles[p]||p;
+  selectedOId=null;
+  render();
 }
 
-// ─── CATEGORY MODAL ─────────────────────────────────────
-function openCatModal() {
-  renderCatList();
-  document.getElementById('catModal').classList.add('open');
+function render(){
+  const c=document.getElementById('content');
+  if(page==='orders') renderOrders(c);
+  else if(page==='menu') renderMenu(c);
+  else renderStats(c);
 }
 
-function renderCatList() {
-  const list = document.getElementById('catList');
-  list.innerHTML = CATS.map(c => {
-    const count = MENU.filter(i => i.category === c).length;
-    return `
-      <div class="cat-item">
-        <span class="cat-name">${c}</span>
-        <span class="cat-count">${count} rätter</span>
-        <button class="btn-cat-rename" onclick="renameCategory('${c}')">Byt namn</button>
-        <button class="btn-cat-del" onclick="deleteCategory('${c}')">Ta bort</button>
-      </div>`;
-  }).join('') || '<div style="color:var(--text3);font-size:13px">Inga kategorier</div>';
-}
+// ── ORDERS ────────────────────────────────────────────────────
+function renderOrders(c){
+  const r=restaurants.find(x=>x.id===activeRestId);
+  const active=orders.filter(o=>!['delivered','cancelled'].includes(o.status));
+  const newCount=orders.filter(o=>o.status==='new').length;
+  const revenue=orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+Number(o.total),0);
 
-async function addCategory() {
-  const input = document.getElementById('newCatInput');
-  const name = input.value.trim();
-  if (!name) return;
-  
-  if (!CATS.includes(name)) {
-    // Save to Supabase
-    await SB.from('menu_categories').insert({
-      restaurant_id: RESTAURANT.id,
-      name,
-      sort_order: CATS.length
-    });
-    CATS.push(name);
-  }
-  
-  input.value = '';
-  renderCatList();
-  toast('✅ Kategori tillagd: ' + name);
-}
+  const badge=document.getElementById('newBadge');
+  badge.style.display=newCount?'':'none';
+  badge.textContent=newCount;
 
-async function renameCategory(oldName) {
-  const newName = prompt('Nytt namn för: ' + oldName, oldName);
-  if (!newName || newName === oldName) return;
-  
-  // Update menu_items
-  await SB.from('menu_items')
-    .update({ category: newName })
-    .eq('restaurant_id', RESTAURANT.id)
-    .eq('category', oldName);
-  
-  // Update menu_categories
-  await SB.from('menu_categories')
-    .update({ name: newName })
-    .eq('restaurant_id', RESTAURANT.id)
-    .eq('name', oldName);
-  
-  CATS = CATS.map(c => c === oldName ? newName : c);
-  await loadMenu();
-  renderCatList();
-  toast('✅ Kategori omdöpt');
-}
-
-async function deleteCategory(name) {
-  if (!confirm(`Ta bort kategori "${name}"? Rätterna behåller kategorin som text.`)) return;
-  
-  await SB.from('menu_categories')
-    .delete().eq('restaurant_id', RESTAURANT.id).eq('name', name);
-  
-  CATS = CATS.filter(c => c !== name);
-  renderCatList();
-  toast('🗑️ Kategori borttagen');
-}
-
-// ─── HISTORIK ───────────────────────────────────────────
-async function renderHistorikPage() {
-  const { data: orders } = await SB.from('orders')
-    .select('*').eq('restaurant_id', RESTAURANT.id)
-    .eq('status', 'delivered')
-    .order('created_at', { ascending: false }).limit(50);
-
-  const rows = (orders || []).map(o => {
-    const items = Array.isArray(o.items) ? o.items : (JSON.parse(o.items || '[]'));
-    const artiklarCount = items.reduce((s, i) => s + (i.quantity || 1), 0);
-    const artiklarTooltip = items.map(i => `${i.quantity||1}× ${i.name}`).join('<br>');
-    const d = new Date(o.created_at);
-    
-    return `
-      <tr>
-        <td style="color:var(--cyan);font-family:var(--mono)">${o.id?.slice(0,10)}</td>
-        <td style="color:var(--text)">${d.toLocaleDateString('sv-SE')}</td>
-        <td style="color:var(--text)">${o.customer_name || '–'}</td>
-        <td class="artiklar-cell">${artiklarCount}
-          <div class="artiklar-tooltip">${artiklarTooltip}</div>
-        </td>
-        <td style="color:var(--green);font-family:var(--mono)">${o.total_amount || o.total || 0} kr</td>
-      </tr>`;
-  }).join('');
-
-  document.getElementById('mainContent').innerHTML = `
-    <div class="page-header">
-      <div class="page-title">Historik</div>
-      <div class="page-sub">Levererade ordrar</div>
+  c.innerHTML=`
+    <div class="stats-row">
+      <div class="sc"><div class="sc-label">Intäkter (session)</div><div class="sc-val">${revenue.toFixed(0)} kr</div><div class="sc-sub" style="color:var(--muted)">${orders.length} ordrar</div></div>
+      <div class="sc"><div class="sc-label">Aktiva</div><div class="sc-val">${active.length}</div><div class="sc-sub" style="color:var(--orange)">${newCount} nya</div></div>
+      <div class="sc"><div class="sc-label">Betyg</div><div class="sc-val">${r?.rating||'—'} ⭐</div><div class="sc-sub" style="color:var(--muted)">${r?.review_count||0} rec</div></div>
+      <div class="sc"><div class="sc-label">Tillagningstid</div><div class="sc-val">${r?.prep_time_min||20} min</div><div class="sc-sub" style="color:var(--muted)">Estimerat</div></div>
     </div>
-    <div class="profil-section" style="overflow-x:auto">
-      <table class="historik-table">
-        <thead><tr>
-          <th>Order-ID</th><th>Datum</th><th>Kund</th><th>Artiklar</th><th>Totalt</th>
-        </tr></thead>
-        <tbody>${rows || '<tr><td colspan="5" style="text-align:center;color:var(--text3)">Inga levererade ordrar</td></tr>'}</tbody>
-      </table>
+    <div class="two-col">
+      <div class="panel">
+        <div class="ph"><div class="ph-title">Live-beställningar (${orders.length})</div><button class="ph-btn" onclick="switchRest(activeRestId)">↺ Uppdatera</button></div>
+        <div id="orderList">
+          ${orders.length===0?'<div class="no-orders">INGA BESTÄLLNINGAR ÄN — Testa med knappen ovan</div>':''}
+          ${orders.map(o=>orderRowHTML(o)).join('')}
+        </div>
+      </div>
+      <div class="panel" id="detailPanel">
+        <div class="detail-empty"><div style="font-size:34px">📋</div>VÄLJ EN BESTÄLLNING</div>
+      </div>
     </div>`;
 }
 
-// ─── STATISTIK ──────────────────────────────────────────
-async function renderStatistikPage() {
-  const { data: allOrders } = await SB.from('orders')
-    .select('*').eq('restaurant_id', RESTAURANT.id).eq('status', 'delivered');
-  
-  const orders = allOrders || [];
-  const today = new Date().toDateString();
-  const todayOrders = orders.filter(o => new Date(o.created_at).toDateString() === today);
-  const totalRev = orders.reduce((s, o) => s + (o.total_amount || o.total || 0), 0);
-  const todayRev = todayOrders.reduce((s, o) => s + (o.total_amount || o.total || 0), 0);
-
-  // Top rätter
-  const itemCount = {};
-  orders.forEach(o => {
-    const items = Array.isArray(o.items) ? o.items : (JSON.parse(o.items || '[]'));
-    items.forEach(i => { itemCount[i.name] = (itemCount[i.name] || 0) + (i.quantity || 1); });
-  });
-  const topRatts = Object.entries(itemCount).sort((a,b) => b[1]-a[1]).slice(0,5);
-
-  document.getElementById('mainContent').innerHTML = `
-    <div class="page-header"><div class="page-title">Statistik</div></div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label">Idag</div><div class="stat-value cyan">${todayOrders.length}</div><div style="font-size:12px;color:var(--text2)">ordrar</div></div>
-      <div class="stat-card"><div class="stat-label">Idag intäkter</div><div class="stat-value green">${todayRev} kr</div></div>
-      <div class="stat-card"><div class="stat-label">Totalt ordrar</div><div class="stat-value">${orders.length}</div></div>
-      <div class="stat-card"><div class="stat-label">Total omsättning</div><div class="stat-value orange">${totalRev} kr</div></div>
+const SL={new:'NY',accepted:'MOTTAGEN',preparing:'TILLAGAS',ready:'KLAR',picked:'HÄMTAD',delivered:'LEVERERAD',cancelled:'ANNULLERAD'};
+function orderRowHTML(o){
+  const items=typeof o.items==='string'?JSON.parse(o.items):o.items;
+  const preview=(items||[]).map(i=>`${i.qty}× ${i.name}`).join(', ');
+  const t=new Date(o.created_at);
+  const tStr=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');
+  return`<div class="orow${selectedOId===o.id?' selected':''}" onclick="selectOrder('${o.id}')">
+    <div class="orow-top"><span class="oid">${o.id}</span><span class="badge b-${o.status}">${SL[o.status]||o.status}</span></div>
+    <div class="ocust">${o.customer_name}</div>
+    <div class="oprev">${preview}</div>
+    <div class="orow-bot"><span class="otime">🕐 ${tStr}</span><span class="ototal">${Number(o.total).toFixed(0)} kr</span></div>
+    <div class="oacts">
+      ${o.status==='new'?`<button class="abtn accept" onclick="event.stopPropagation();upd('${o.id}','accepted')">✓ Acceptera</button><button class="abtn reject" onclick="event.stopPropagation();upd('${o.id}','cancelled')">✕</button>`:''}
+      ${o.status==='accepted'?`<button class="abtn readybtn" onclick="event.stopPropagation();upd('${o.id}','preparing')">Börja tillaga</button>`:''}
+      ${o.status==='preparing'?`<button class="abtn readybtn" onclick="event.stopPropagation();upd('${o.id}','ready')">Markera klar ✓</button>`:''}
     </div>
-    <div class="profil-section">
-      <div class="profil-section-title">Top Rätter</div>
-      ${topRatts.map(([name, count]) => `
-        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
-          <span style="color:var(--text)">${name}</span>
-          <span style="color:var(--cyan);font-family:var(--mono)">${count} beställda</span>
-        </div>`).join('') || '<div style="color:var(--text3)">Ingen data ännu</div>'}
-    </div>`;
+  </div>`;
 }
 
-// ─── PROFIL ─────────────────────────────────────────────
-function renderProfilPage() {
-  const r = RESTAURANT;
-  document.getElementById('mainContent').innerHTML = `
-    <div class="page-header"><div class="page-title">Restaurangprofil</div></div>
-    <div class="profil-grid">
-      <div class="profil-section">
-        <div class="profil-section-title">Kontaktuppgifter</div>
-        <div class="modal-group"><label class="modal-label">Namn</label>
-          <input class="modal-input" id="pName" value="${r.name || ''}"></div>
-        <div class="modal-group"><label class="modal-label">E-post</label>
-          <input class="modal-input" id="pEmail" value="${r.email || ''}"></div>
-        <div class="modal-group"><label class="modal-label">Telefon</label>
-          <input class="modal-input" id="pPhone" value="${r.phone || ''}"></div>
-      </div>
-      <div class="profil-section">
-        <div class="profil-section-title">Adress</div>
-        <div class="modal-group"><label class="modal-label">Gatuadress</label>
-          <input class="modal-input" id="pAddress" value="${r.address || ''}"></div>
-        <div class="modal-group"><label class="modal-label">Postnummer</label>
-          <input class="modal-input" id="pZip" value="${r.zip || ''}"></div>
-        <div class="modal-group"><label class="modal-label">Stad</label>
-          <input class="modal-input" id="pCity" value="${r.city || 'Nyköping'}"></div>
-      </div>
-      <div class="profil-section full">
-        <div class="profil-section-title">Öppettider & Info</div>
-        <div class="modal-group"><label class="modal-label">Öppettider</label>
-          <input class="modal-input" id="pHours" value="${r.opening_hours || '11:00 – 22:00'}"></div>
-        <div class="modal-group"><label class="modal-label">Kökstyp / Kategori</label>
-          <input class="modal-input" id="pCuisine" value="${r.cuisine || ''}"></div>
-        <button class="btn-save" style="margin-top:8px" onclick="saveProfile()">Spara ändringar</button>
-      </div>
-    </div>`;
-}
-
-async function saveProfile() {
-  const payload = {
-    name: document.getElementById('pName')?.value,
-    email: document.getElementById('pEmail')?.value,
-    phone: document.getElementById('pPhone')?.value,
-    address: document.getElementById('pAddress')?.value,
-    zip: document.getElementById('pZip')?.value,
-    city: document.getElementById('pCity')?.value,
-    opening_hours: document.getElementById('pHours')?.value,
-    cuisine: document.getElementById('pCuisine')?.value,
-  };
-  const { error } = await SB.from('restaurants').update(payload).eq('id', RESTAURANT.id);
-  if (error) { toast('❌ ' + error.message); return; }
-  Object.assign(RESTAURANT, payload);
-  toast('✅ Profil sparad');
-}
-
-// ─── STATUS ─────────────────────────────────────────────
-function toggleStatus() {
-  isOpen = !isOpen;
-  const dot = document.getElementById('statusDot');
-  const label = document.getElementById('statusLabel');
-  dot.classList.toggle('open', isOpen);
-  label.textContent = isOpen ? 'Öppen' : 'Stängd';
-  SB.from('restaurants').update({ is_open: isOpen }).eq('id', RESTAURANT.id);
-  toast(isOpen ? '✅ Restaurangen är nu öppen' : '🔴 Restaurangen är nu stängd');
-}
-
-// ─── CHAT ───────────────────────────────────────────────
-function openChat(orderId) {
-  chatOrderId = orderId;
-  chatChannel = 'customer';
-  document.getElementById('chatOrderId').textContent = orderId?.slice(0,12);
-  document.getElementById('chatDrawer').classList.add('open');
-  loadChatMessages();
-  
-  document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('cht-customer').classList.add('active');
-
-  if (chatSub) SB.removeChannel(chatSub);
-  chatSub = SB.channel('chat-' + orderId)
-    .on('postgres_changes', {
-      event: 'INSERT', schema: 'public', table: 'chats',
-      filter: `order_id=eq.${orderId}`
-    }, () => loadChatMessages()).subscribe();
-}
-
-function closeChat() {
-  document.getElementById('chatDrawer').classList.remove('open');
-  if (chatSub) SB.removeChannel(chatSub);
-}
-
-function switchChannel(ch) {
-  chatChannel = ch;
-  document.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('cht-' + ch).classList.add('active');
-  loadChatMessages();
-}
-
-async function loadChatMessages() {
-  const { data } = await SB.from('chats')
-    .select('*').eq('order_id', chatOrderId).eq('channel', chatChannel)
-    .order('created_at');
-  
-  const msgs = document.getElementById('chatMessages');
-  msgs.innerHTML = (data || []).map(m => `
-    <div class="chat-msg ${m.sender_role === 'restaurant' ? 'me' : 'other'}">
-      <div class="msg-sender">${m.sender_name || m.sender_role}</div>
-      ${m.message}
-      <div class="msg-time">${new Date(m.created_at).toLocaleTimeString('sv-SE', {hour:'2-digit',minute:'2-digit'})}</div>
-    </div>`).join('') || '<div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">Inga meddelanden ännu</div>';
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-async function sendMsg() {
-  const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
-  if (!msg) return;
-  input.value = '';
-
-  await SB.from('chats').insert({
-    order_id: chatOrderId,
-    sender_role: 'restaurant',
-    sender_name: RESTAURANT.name,
-    message: msg,
-    channel: chatChannel
+function selectOrder(id){
+  selectedOId=id;
+  document.querySelectorAll('.orow').forEach(el=>{
+    el.classList.toggle('selected',el.querySelector('.oid')?.textContent===id);
   });
+  const o=orders.find(x=>x.id===id);
+  if(o) renderDetail(o);
 }
 
-// ─── TOAST ──────────────────────────────────────────────
-function toast(msg) {
-  const el = document.createElement('div');
-  el.className = 'toast';
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+function renderDetail(o){
+  const dp=document.getElementById('detailPanel');
+  if(!dp)return;
+  const items=typeof o.items==='string'?JSON.parse(o.items):o.items;
+  dp.innerHTML=`
+    <div class="ph"><div class="ph-title">${o.id}</div><span class="badge b-${o.status}">${SL[o.status]}</span></div>
+    <div class="ds"><div class="ds-title">Kund</div>
+      <div class="ds-row">${o.customer_name}</div>
+      <div class="ds-row ds-muted">📍 ${o.address}</div>
+      ${o.customer_email?`<div class="ds-row ds-muted">✉️ ${o.customer_email}</div>`:''}
+      ${o.notes?`<div class="ds-row ds-muted">📝 ${o.notes}</div>`:''}
+    </div>
+    <div class="ds"><div class="ds-title">Artiklar</div>
+      ${(items||[]).map(i=>`<div class="ds-row"><span>${i.qty}× ${i.name}</span><span class="ds-muted">${(i.price*i.qty).toFixed(0)} kr</span></div>`).join('')}
+    </div>
+    <div style="padding:13px 18px;display:flex;justify-content:space-between;font-family:var(--fd);font-size:16px;font-weight:700">
+      <span>Totalt</span><span style="color:var(--cyan)">${Number(o.total).toFixed(0)} kr</span>
+    </div>
+    ${o.rider_id?`<div class="ds"><div class="ds-title">Bud</div><div class="ds-row">🛵 Tilldelad</div></div>`:''}
+    <div style="padding:13px 18px;display:flex;flex-direction:column;gap:8px">
+      ${o.status==='new'?`<button onclick="upd('${o.id}','accepted')" style="background:var(--grad);color:var(--bg);font-family:var(--fm);font-weight:600;font-size:12px;padding:12px;border-radius:9px;border:none;cursor:pointer;letter-spacing:.05em">ACCEPTERA BESTÄLLNING</button>`:''}
+      ${o.status==='accepted'?`<button onclick="upd('${o.id}','preparing')" style="background:rgba(0,212,255,.1);color:var(--cyan);font-family:var(--fm);font-size:12px;padding:11px;border-radius:9px;border:1px solid rgba(0,212,255,.25);cursor:pointer">BÖRJA TILLAGA</button>`:''}
+      ${o.status==='preparing'?`<button onclick="upd('${o.id}','ready')" style="background:rgba(0,255,136,.1);color:var(--green);font-family:var(--fm);font-size:12px;padding:11px;border-radius:9px;border:1px solid rgba(0,255,136,.25);cursor:pointer">MARKERA KLAR ✓</button>`:''}
+    </div>`;
 }
 
-// ─── INIT ───────────────────────────────────────────────
-SB.auth.getSession().then(({ data: { session } }) => {
-  if (session) {
-    SB.from('restaurants').select('*').eq('auth_user_id', session.user.id).single()
-      .then(({ data: rest }) => {
-        if (rest) { RESTAURANT = rest; loadApp(); }
-        // else show login
-      });
-  }
-});
+async function upd(id,status){
+  const{error}=await SB.from('orders').update({status}).eq('id',id);
+  if(error){toast(error.message,'err');return}
+  notify('STATUS',`${id} → ${SL[status]}`);
+}
+
+function onNewOrder(o){
+  notify('NY BESTÄLLNING',`${o.id} från ${o.customer_name}!`);
+  document.getElementById('sbName').style.animation='none';
+  requestAnimationFrame(()=>{ document.getElementById('sbName').style.animation='ring .6s 3'; });
+  // Flash row when rendered
+  setTimeout(()=>{
+    const rows=document.querySelectorAll('.orow');
+    rows.forEach(r=>{ if(r.querySelector('.oid')?.textContent===o.id) r.classList.add('new-flash'); });
+  },100);
+}
+
+// ── MENU ──────────────────────────────────────────────────────
+function renderMenu(c){
+  const r=restaurants.find(x=>x.id===activeRestId);
+  if(!r){c.innerHTML='<div class="no-orders">Ingen restaurang vald</div>';return}
+  const items=(r.menu_items||[]).sort((a,b)=>a.sort_order-b.sort_order);
+  const groups={};
+  items.forEach(i=>{if(!groups[i.category])groups[i.category]=[];groups[i.category].push(i)});
+
+  c.innerHTML=`<div class="panel">
+    <div class="ph">
+      <div class="ph-title">Meny — ${r.name}</div>
+      <span style="font-family:var(--fm);font-size:10px;color:var(--muted)">${items.filter(i=>i.is_available).length}/${items.length} tillgängliga</span>
+    </div>
+    ${Object.entries(groups).map(([cat,its])=>`
+      <div style="padding:9px 18px 2px;font-family:var(--fm);font-size:9px;color:var(--cyan);letter-spacing:.1em;text-transform:uppercase;border-top:1px solid var(--border)">${cat}</div>
+      ${its.map(item=>`
+        <div class="mrow">
+          <div>
+            <div class="mrow-name">${item.name}</div>
+            <div class="mrow-meta">${item.price} kr · ${item.is_available?'<span style="color:var(--green)">Tillgänglig</span>':'<span style="color:var(--red)">Slutsåld</span>'}</div>
+          </div>
+          <button class="itoggle ${item.is_available?'on':'off'}" onclick="toggleItem('${item.id}',${!item.is_available})"></button>
+        </div>
+      `).join('')}
+    `).join('')}
+  </div>`;
+}
+
+async function toggleItem(itemId,available){
+  const{error}=await SB.from('menu_items').update({is_available:available}).eq('id',itemId);
+  if(error){toast(error.message,'err');return}
+  notify('MENY',available?'Rätten är nu tillgänglig':'Rätten är markerad slutsåld');
+}
+
+// ── STATS ─────────────────────────────────────────────────────
+function renderStats(c){
+  const revenue=orders.filter(o=>o.status!=='cancelled').reduce((s,o)=>s+Number(o.total),0);
+  const delivered=orders.filter(o=>o.status==='delivered').length;
+  const r=restaurants.find(x=>x.id===activeRestId);
+  const days=[{d:'Mån',v:78},{d:'Tis',v:92},{d:'Ons',v:65},{d:'Tor',v:110},{d:'Fre',v:145},{d:'Lör',v:188},{d:'Sön',v:130}];
+  const max=Math.max(...days.map(d=>d.v));
+  c.innerHTML=`
+    <div class="stats-row">
+      <div class="sc"><div class="sc-label">Totalt (session)</div><div class="sc-val">${revenue.toFixed(0)} kr</div></div>
+      <div class="sc"><div class="sc-label">Ordrar</div><div class="sc-val">${orders.length}</div></div>
+      <div class="sc"><div class="sc-label">Levererade</div><div class="sc-val">${delivered}</div></div>
+      <div class="sc"><div class="sc-label">Betyg</div><div class="sc-val">${r?.rating||'—'} ⭐</div></div>
+    </div>
+    <div class="panel">
+      <div class="ph"><div class="ph-title">Ordrar per dag (provdata)</div></div>
+      <div style="padding:16px 18px">
+        ${days.map(d=>`<div class="bar-row"><div class="bar-lbl">${d.d}</div><div class="bar-track"><div class="bar-fill" style="width:${(d.v/max*100).toFixed(0)}%"></div></div><div class="bar-num">${d.v}</div></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── SIMULATE ─────────────────────────────────────────────────
+async function simulateOrder(){
+  const r=restaurants.find(x=>x.id===activeRestId);
+  if(!r)return;
+  const avail=(r.menu_items||[]).filter(m=>m.is_available);
+  if(!avail.length){toast('Inga tillgängliga rätter','err');return}
+  const item=avail[Math.floor(Math.random()*avail.length)];
+  const names=['Erik L.','Sara J.','Mikael B.','Anna P.','Lars K.','Sofia W.'];
+  const addrs=['Sveavägen 45','Drottninggatan 12','Kungsgatan 78','Hornsgatan 22'];
+  const name=names[Math.floor(Math.random()*names.length)];
+  const addr=addrs[Math.floor(Math.random()*addrs.length)]+', Stockholm';
+
+  const{data:oid}=await SB.rpc('next_order_id');
+  const{error}=await SB.from('orders').insert({
+    id:oid, restaurant_id:activeRestId,
+    customer_name:name, address:addr,
+    items:JSON.stringify([{itemId:item.id,name:item.name,price:item.price,qty:1}]),
+    total:item.price, status:'new',
+  });
+  if(error) toast(error.message,'err');
+  else toast(`Testorder ${oid} skapad!`,'info');
+}
+
+// ── NOTIFY / TOAST ───────────────────────────────────────────
+let _nt;
+function notify(tag,msg){
+  document.getElementById('notifTag').textContent=tag;
+  document.getElementById('notifMsg').textContent=msg;
+  const el=document.getElementById('notif');
+  el.classList.add('show');clearTimeout(_nt);
+  _nt=setTimeout(()=>el.classList.remove('show'),3500);
+}
+let _tt;
+function toast(msg,type=''){
+  document.getElementById('toastMsg').textContent=msg;
+  const el=document.getElementById('toast');
+  el.className='toast'+(type?` toast--${type}`:'');
+  el.classList.add('show');clearTimeout(_tt);
+  _tt=setTimeout(()=>el.classList.remove('show'),3000);
+}
 </script>
 </body>
 </html>
